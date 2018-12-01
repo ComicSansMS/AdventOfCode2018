@@ -1,6 +1,7 @@
 #include <calibration.hpp>
 
 #include <algorithm>
+#include <cassert>
 #include <iterator>
 #include <numeric>
 #include <regex>
@@ -8,7 +9,7 @@
 
 std::vector<int> parseInput(std::string_view input)
 {
-    std::regex rx_line(R"(^([+-])(\d+)$)");
+    std::regex rx_line(R"(([+-])(\d+))");
 
     using regex_it = std::regex_iterator<std::string_view::iterator>;
     auto const it_begin = regex_it(begin(input), end(input), rx_line);
@@ -32,6 +33,7 @@ int findRecurringFrequency(std::vector<int> const& frequency_changes)
     std::unordered_set<int> known_frequencies;
     auto const it_begin = begin(frequency_changes);
     auto const it_end = end(frequency_changes);
+    assert(it_begin != it_end);
     auto it = it_begin;
 
     // keep accumulating until a frequency is encountered twice
