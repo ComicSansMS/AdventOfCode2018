@@ -1,5 +1,6 @@
 add_library(01_calibration STATIC calibration.hpp calibration.cpp)
 target_include_directories(01_calibration PUBLIC ${CMAKE_CURRENT_LIST_DIR})
+target_link_libraries(01_calibration PUBLIC range-v3)
 add_executable(advent01 advent01.cpp)
 target_link_libraries(advent01 PUBLIC 01_calibration)
 
