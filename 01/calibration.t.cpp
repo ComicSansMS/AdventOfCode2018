@@ -2,7 +2,7 @@
 
 #include <calibration.hpp>
 
-TEST_CASE("Lib")
+TEST_CASE("Frequency Calibration")
 {
     char const* sample_input_01 = "+1\n-2\n+3\n+1\n";
     char const* sample_input_02 = "+1\n+1\n+1\n";
