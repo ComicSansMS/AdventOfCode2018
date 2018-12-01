@@ -53,6 +53,8 @@ add_library(Catch STATIC ${PROJECT_SOURCE_DIR}/external/catch/catch_main.cpp)
 target_include_directories(Catch PUBLIC ${CATCH_INCLUDE_DIR})
 target_compile_definitions(Catch PUBLIC $<$<CXX_COMPILER_ID:MSVC>:_SILENCE_CXX17_UNCAUGHT_EXCEPTION_DEPRECATION_WARNING>)
 
+find_package(range-v3 REQUIRED HINTS ${PROJECT_SOURCE_DIR}/external/range-v3)
+
 add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/W4>)
 add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/permissive->)
 add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/std:c++latest>)
