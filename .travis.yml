@@ -78,13 +78,13 @@ after_success:
         if [ -d 0$i ]; then
             echo Result for day 0$i:
             cd 0$i
-            ./advent0$i input
+            ./advent0$i
         fi
       else
         if [ -d $i ]; then
             echo Result for day $i:
             cd $i
-            ./advent$i input
+            ./advent$i
         fi
       fi
       cd ..
