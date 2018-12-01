@@ -1,4 +1,4 @@
-#include <lib.hpp>
+#include <calibration.hpp>
 
 #include <fstream>
 #include <iostream>
@@ -14,18 +14,18 @@ std::optional<std::string> readInput(char const* filename)
         return std::nullopt;
     }
 
-    std::string input;
-    std::getline(fin, input);
+    std::stringstream sstr;
+    sstr << fin.rdbuf();
     if(!fin) {
         std::cerr << "Unable to read input from file '" << filename << "'." << std::endl;
         return std::nullopt;
     }
-    return input;
+    return sstr.str();
 }
 
 int main(int argc, char* argv[])
 {
-    char const* input_filename = "input";
+    char const* input_filename = "input.txt";
     if(argc == 2) {
         input_filename = argv[1];
     }
@@ -36,11 +36,9 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    std::stringstream sstr(*input);
-    int result01, result02;
-    sstr >> result01 >> result02;
-    std::cout << "First result is " << foo(result01) << std::endl;
+    std::vector<int> const frequency_changes = parseInput(*input);
+    std::cout << "First result is " << calculateResultFrequency(frequency_changes) << std::endl;
+    std::cout << "Second result is " << findRecurringFrequency(frequency_changes) << std::endl;
 
-    std::cout << "Second result is " << foo(result02) << std::endl;
     return 0;
 }
