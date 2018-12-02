@@ -1,7 +1,10 @@
 #include <warehouse_ids.hpp>
 
 #include <range/v3/core.hpp>
+#include <range/v3/view/filter.hpp>
 #include <range/v3/view/split.hpp>
+#include <range/v3/view/take.hpp>
+#include <range/v3/view/zip.hpp>
 
 #include <array>
 #include <cassert>
@@ -47,20 +50,16 @@ int calculateChecksum(std::vector<std::string> const& ids)
 std::optional<int> stringDifferenceIsOne(std::string_view str1, std::string_view str2)
 {
     assert(str1.length() == str2.length());
-    auto it1 = str1.begin();
-    auto const it1_end = str1.end();
-    auto it2 = str2.begin();
-    int firstDifferenceEncounteredAt = -1;
-    for(int i=0; i<static_cast<int>(str1.length()); ++i) {
-        if(str1[i] != str2[i]) {
-            if(firstDifferenceEncounteredAt != -1) { 
-                return std::nullopt;
-            } else {
-                firstDifferenceEncounteredAt = i;
-            }
-        }
-    }
-    return (firstDifferenceEncounteredAt != -1) ? std::optional<int>(firstDifferenceEncounteredAt) : std::nullopt;
+
+    int differenceAt = -1;
+    int i = 0;
+    auto rng = ranges::view::zip(str1, str2) |
+        ranges::view::filter([&](auto z) {
+            if(std::get<0>(z) == std::get<1>(z)) { ++i; return false; }
+            else { differenceAt = i; return true; }
+        }) |
+        ranges::view::take(2);
+    return (ranges::distance(rng) == 1) ? std::optional<int>(differenceAt) : std::nullopt;
 }
 
 std::string commonCode(std::vector<std::string> const& ids)

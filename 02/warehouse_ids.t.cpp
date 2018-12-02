@@ -66,5 +66,6 @@ TEST_CASE("Warehouse Ids")
     {
         std::vector<std::string> ids{ "abcde", "fghij", "klmno", "pqrst", "fguij", "axcye", "wvxyz" };
         CHECK(commonCode(ids) == "fgij");
+        CHECK(commonCode({"abc", "abc"}) == "");
     }
 }
