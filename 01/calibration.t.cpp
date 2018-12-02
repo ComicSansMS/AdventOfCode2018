@@ -1,6 +1,6 @@
-#include <catch.hpp>
-
 #include <calibration.hpp>
+
+#include <catch.hpp>
 
 TEST_CASE("Frequency Calibration")
 {

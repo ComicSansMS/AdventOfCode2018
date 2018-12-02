@@ -2,6 +2,7 @@
 #define ADVENT_OF_CODE_01_CALIBRATION_HPP_INCLUDE_GUARD
 
 #include <optional>
+#include <ostream>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -14,6 +15,9 @@ struct Occurences {
 };
 inline bool operator==(Occurences const& lhs, Occurences const& rhs) {
     return (lhs.occursTwice == rhs.occursTwice) && (lhs.occursThrice == rhs.occursThrice);
+}
+inline std::ostream& operator<<(std::ostream& os, Occurences const& oc) {
+    return os << "{2: " << std::boolalpha << oc.occursTwice << ", 3: " << std::boolalpha << oc.occursThrice << "}";
 }
 Occurences countLetters(std::string_view id);
 

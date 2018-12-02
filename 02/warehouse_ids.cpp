@@ -1,20 +1,19 @@
 #include <warehouse_ids.hpp>
 
+#include <range/v3/core.hpp>
+#include <range/v3/view/split.hpp>
+
 #include <array>
 #include <cassert>
-#include <iterator>
-#include <sstream>
 #include <string>
 
 std::vector<std::string> parseInput(std::string_view input)
 {
     std::vector<std::string> ret;
 
-    std::stringstream sstr{std::string(input)};
-    for (std::string line; std::getline(sstr, line);) {
-        ret.emplace_back(std::move(line));
+    for(auto const& str : (input | ranges::view::split('\n'))) {
+        ret.emplace_back(str);
     }
-
     return ret;
 }
 

@@ -1,12 +1,8 @@
-#include <catch.hpp>
-
 #include <warehouse_ids.hpp>
 
-#include <ostream>
+#include <catch.hpp>
 
-std::ostream& operator<<(std::ostream& os, Occurences const& oc) {
-    return os << "{ 2: " << std::boolalpha << oc.occursTwice << ", 3: " << std::boolalpha << oc.occursThrice << "}";
-}
+#include <sstream>
 
 TEST_CASE("Warehouse Ids")
 {
@@ -23,6 +19,22 @@ TEST_CASE("Warehouse Ids")
         CHECK(ids[4] == "aabcdd");
         CHECK(ids[5] == "abcdee");
         CHECK(ids[6] == "ababab");
+    }
+
+    SECTION("Occurence Equality")
+    {
+        CHECK(Occurences{true, true} == Occurences{true, true});
+        CHECK(Occurences{true, false} == Occurences{true, false});
+        CHECK(Occurences{false, true} == Occurences{false, true});
+        CHECK(Occurences{false, false} == Occurences{false, false});
+        CHECK_FALSE(Occurences{true, true} == Occurences{true, false});
+    }
+
+    SECTION("Occurence Ostream Inserter")
+    {
+        std::stringstream sstr;
+        sstr << Occurences{true, false};
+        CHECK(sstr.str() == "{2: true, 3: false}");
     }
 
     SECTION("Count Letters")
