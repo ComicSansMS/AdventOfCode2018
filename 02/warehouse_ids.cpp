@@ -1,9 +1,11 @@
 #include <warehouse_ids.hpp>
 
 #include <range/v3/core.hpp>
+#include <range/v3/view/cartesian_product.hpp>
 #include <range/v3/view/filter.hpp>
 #include <range/v3/view/split.hpp>
 #include <range/v3/view/take.hpp>
+#include <range/v3/view/transform.hpp>
 #include <range/v3/view/zip.hpp>
 
 #include <array>
@@ -64,16 +66,18 @@ std::optional<int> stringDifferenceIsOne(std::string_view str1, std::string_view
 
 std::string commonCode(std::vector<std::string> const& ids)
 {
-    int const ids_size = static_cast<int>(ids.size());
-    for(int i = 0; i < ids_size; ++i) {
-        for(int j = i; j < ids_size; ++j) {
-            auto diff_one = stringDifferenceIsOne(ids[i], ids[j]);
-            if(diff_one) {
-                std::string ret = ids[i];
-                ret.erase(*diff_one, 1);
-                return ret;
-            }
-        }
-    }
-    return "";
+    auto const idDiffAndKeepFirstString = []() {
+        return ranges::view::transform([](auto ids) -> std::tuple<std::optional<int>, std::string_view> {
+            return { stringDifferenceIsOne(std::get<0>(ids), std::get<1>(ids)), std::get<0>(ids) };
+        });
+    };
+    auto const filterDiffIsOne = []() {
+        return ranges::view::filter([](auto diff_id_pair) -> bool { return std::get<0>(diff_id_pair).has_value(); });
+    };
+    auto rng = ranges::view::cartesian_product(ids, ids) | idDiffAndKeepFirstString() | filterDiffIsOne();
+    if(rng.empty()) { return ""; }
+    auto const& [diff, id_str] = *rng.begin();
+    std::string ret{ id_str };
+    ret.erase(*diff, 1);
+    return ret;
 }
