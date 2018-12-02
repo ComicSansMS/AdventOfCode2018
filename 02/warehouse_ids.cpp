@@ -1,7 +1,9 @@
 #include <warehouse_ids.hpp>
 
 #include <range/v3/core.hpp>
+#ifndef _MSC_VER
 #include <range/v3/view/cartesian_product.hpp>
+#endif
 #include <range/v3/view/filter.hpp>
 #include <range/v3/view/split.hpp>
 #include <range/v3/view/take.hpp>
@@ -11,6 +13,7 @@
 #include <array>
 #include <cassert>
 #include <string>
+#include <iostream>
 
 std::vector<std::string> parseInput(std::string_view input)
 {
@@ -66,6 +69,20 @@ std::optional<int> stringDifferenceIsOne(std::string_view str1, std::string_view
 
 std::string commonCode(std::vector<std::string> const& ids)
 {
+#ifdef _MSC_VER
+    int const ids_size = static_cast<int>(ids.size());
+    for(int i = 0; i < ids_size; ++i) {
+        for(int j = i; j < ids_size; ++j) {
+            auto diff_one = stringDifferenceIsOne(ids[i], ids[j]);
+            if(diff_one) {
+                std::string ret = ids[i];
+                ret.erase(*diff_one, 1);
+                return ret;
+            }
+        }
+    }
+    return "";
+#else
     auto const idDiffAndKeepFirstString = []() {
         return ranges::view::transform([](auto ids) -> std::tuple<std::optional<int>, std::string_view> {
             return { stringDifferenceIsOne(std::get<0>(ids), std::get<1>(ids)), std::get<0>(ids) };
@@ -80,4 +97,5 @@ std::string commonCode(std::vector<std::string> const& ids)
     std::string ret{ id_str };
     ret.erase(*diff, 1);
     return ret;
+#endif
 }
