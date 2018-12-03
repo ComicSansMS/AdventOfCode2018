@@ -44,6 +44,8 @@ public:
 
     int getOverlap() const;
 
+    int findNoneOverlap(std::vector<Rectangle> const& rects) const;
+
 private:
     int getCellIndex(int x, int y) const;
 };

@@ -131,4 +131,14 @@ TEST_CASE("Rectangle Cover")
         INFO(f);
         CHECK(f.getOverlap() == 4);
     }
+
+    SECTION("Find Rectangle That Has No Overlap")
+    {
+        auto rects = parseInput(sample_input);
+        Field f(getFieldDimensions(rects));
+        for(auto const& r : rects) { f.placeRectangle(r); }
+        CHECK(f.findNoneOverlap(rects) == 3);
+        f.placeRectangle(Rectangle{4, 4, 2, 2});
+        CHECK(f.findNoneOverlap(rects) == -1);
+    }
 }

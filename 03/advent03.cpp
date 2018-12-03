@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
     for(auto const& r : rects) { f.placeRectangle(r); }
 
     std::cout << "First result is " << f.getOverlap() << std::endl;
-    //std::cout << "Second result is " << commonCode(warehouse_ids) << std::endl;
+    std::cout << "Second result is " << f.findNoneOverlap(rects) << std::endl;
 
     return 0;
 }
