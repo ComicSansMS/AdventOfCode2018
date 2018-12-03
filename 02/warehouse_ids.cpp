@@ -13,7 +13,6 @@
 #include <array>
 #include <cassert>
 #include <string>
-#include <iostream>
 
 std::vector<std::string> parseInput(std::string_view input)
 {
