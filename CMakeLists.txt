@@ -55,6 +55,10 @@ target_compile_definitions(Catch PUBLIC $<$<CXX_COMPILER_ID:MSVC>:_SILENCE_CXX17
 
 find_package(range-v3 REQUIRED HINTS ${PROJECT_SOURCE_DIR}/external/range-v3)
 
+find_path(DATE_INCLUDE_DIR NAMES date/date.h PATHS ${PROJECT_SOURCE_DIR}/external/date PATH_SUFFIXES include)
+add_library(date INTERFACE)
+target_include_directories(date INTERFACE ${DATE_INCLUDE_DIR})
+
 add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/W4>)
 add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/permissive->)
 add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/std:c++latest>)
