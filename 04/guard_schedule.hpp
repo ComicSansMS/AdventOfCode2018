@@ -23,4 +23,8 @@ struct SleepTime {
 
 std::unordered_map<int, std::vector<SleepTime>> calculateSleepTimes(std::vector<ScheduleEntry> const& schedule);
 
+std::chrono::minutes totalSleepTimeForGuard(std::vector<SleepTime> const& sleep_times);
+
+int findGuardWithMostSleep(std::unordered_map<int, std::vector<SleepTime>> const& sleep_schedule);
+
 #endif

@@ -80,39 +80,65 @@ TEST_CASE("Guard Schedule")
         using namespace std::literals::chrono_literals;
 
         auto const schedule = parseInput(sample_input);
-        auto sleep_times = calculateSleepTimes(schedule);
+        auto sleep_schedule = calculateSleepTimes(schedule);
 
-        REQUIRE(sleep_times.size() == 2);
-        REQUIRE(sleep_times.find(10) != end(sleep_times));
-        REQUIRE(sleep_times.find(99) != end(sleep_times));
+        REQUIRE(sleep_schedule.size() == 2);
+        REQUIRE(sleep_schedule.find(10) != end(sleep_schedule));
+        REQUIRE(sleep_schedule.find(99) != end(sleep_schedule));
 
-        REQUIRE(sleep_times[10].size() == 3);
+        REQUIRE(sleep_schedule[10].size() == 3);
 
-        CHECK(sleep_times[10][0].start_sleep == date::local_time<std::chrono::minutes>(date::local_days(1518_y/11/1)) +
-                                                date::make_time(0h, 5min, 0).to_duration());
-        CHECK(sleep_times[10][0].sleep_duration == 20min);
+        CHECK(sleep_schedule[10][0].start_sleep ==
+            date::local_time<std::chrono::minutes>(date::local_days(1518_y/11/1)) +
+            date::make_time(0h, 5min, 0).to_duration());
+        CHECK(sleep_schedule[10][0].sleep_duration == 20min);
 
-        CHECK(sleep_times[10][1].start_sleep == date::local_time<std::chrono::minutes>(date::local_days(1518_y/11/1)) +
-                                                date::make_time(0h, 30min, 0).to_duration());
-        CHECK(sleep_times[10][1].sleep_duration == 25min);
+        CHECK(sleep_schedule[10][1].start_sleep ==
+            date::local_time<std::chrono::minutes>(date::local_days(1518_y/11/1)) +
+            date::make_time(0h, 30min, 0).to_duration());
+        CHECK(sleep_schedule[10][1].sleep_duration == 25min);
 
-        CHECK(sleep_times[10][2].start_sleep == date::local_time<std::chrono::minutes>(date::local_days(1518_y/11/3)) +
-                                                date::make_time(0h, 24min, 0).to_duration());
-        CHECK(sleep_times[10][2].sleep_duration == 5min);
+        CHECK(sleep_schedule[10][2].start_sleep ==
+            date::local_time<std::chrono::minutes>(date::local_days(1518_y/11/3)) +
+            date::make_time(0h, 24min, 0).to_duration());
+        CHECK(sleep_schedule[10][2].sleep_duration == 5min);
 
-        REQUIRE(sleep_times[99].size() == 3);
+        REQUIRE(sleep_schedule[99].size() == 3);
 
-        CHECK(sleep_times[99][0].start_sleep == date::local_time<std::chrono::minutes>(date::local_days(1518_y/11/2)) +
-                                                date::make_time(0h, 40min, 0).to_duration());
-        CHECK(sleep_times[99][0].sleep_duration == 10min);
+        CHECK(sleep_schedule[99][0].start_sleep ==
+            date::local_time<std::chrono::minutes>(date::local_days(1518_y/11/2)) +
+            date::make_time(0h, 40min, 0).to_duration());
+        CHECK(sleep_schedule[99][0].sleep_duration == 10min);
 
-        CHECK(sleep_times[99][1].start_sleep == date::local_time<std::chrono::minutes>(date::local_days(1518_y/11/4)) +
-                                                date::make_time(0h, 36min, 0).to_duration());
-        CHECK(sleep_times[99][1].sleep_duration == 10min);
+        CHECK(sleep_schedule[99][1].start_sleep ==
+            date::local_time<std::chrono::minutes>(date::local_days(1518_y/11/4)) +
+            date::make_time(0h, 36min, 0).to_duration());
+        CHECK(sleep_schedule[99][1].sleep_duration == 10min);
 
-        CHECK(sleep_times[99][2].start_sleep == date::local_time<std::chrono::minutes>(date::local_days(1518_y/11/5)) +
-                                                date::make_time(0h, 45min, 0).to_duration());
-        CHECK(sleep_times[99][2].sleep_duration == 10min);
-
+        CHECK(sleep_schedule[99][2].start_sleep ==
+            date::local_time<std::chrono::minutes>(date::local_days(1518_y/11/5)) +
+            date::make_time(0h, 45min, 0).to_duration());
+        CHECK(sleep_schedule[99][2].sleep_duration == 10min);
     }
+
+    SECTION("Total Sleep Time")
+    {
+        using namespace std::literals::chrono_literals;
+
+        auto const schedule = parseInput(sample_input);
+        auto sleep_schedule = calculateSleepTimes(schedule);
+
+        CHECK(totalSleepTimeForGuard(sleep_schedule[10]) == 50min);
+        CHECK(totalSleepTimeForGuard(sleep_schedule[99]) == 30min);
+    }
+
+    SECTION("Find Guard With Most Sleep")
+    {
+        auto const schedule = parseInput(sample_input);
+        auto sleep_schedule = calculateSleepTimes(schedule);
+
+        CHECK(findGuardWithMostSleep(sleep_schedule) == 10);
+    }
+
+
 }
