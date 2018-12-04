@@ -80,7 +80,7 @@ TEST_CASE("Guard Schedule")
         using namespace std::literals::chrono_literals;
 
         auto const schedule = parseInput(sample_input);
-        auto sleep_schedule = calculateSleepTimes(schedule);
+        auto sleep_schedule = calculateSleepSchedule(schedule);
 
         REQUIRE(sleep_schedule.size() == 2);
         REQUIRE(sleep_schedule.find(10) != end(sleep_schedule));
@@ -126,7 +126,7 @@ TEST_CASE("Guard Schedule")
         using namespace std::literals::chrono_literals;
 
         auto const schedule = parseInput(sample_input);
-        auto sleep_schedule = calculateSleepTimes(schedule);
+        auto sleep_schedule = calculateSleepSchedule(schedule);
 
         CHECK(totalSleepTimeForGuard(sleep_schedule[10]) == 50min);
         CHECK(totalSleepTimeForGuard(sleep_schedule[99]) == 30min);
@@ -135,10 +135,25 @@ TEST_CASE("Guard Schedule")
     SECTION("Find Guard With Most Sleep")
     {
         auto const schedule = parseInput(sample_input);
-        auto sleep_schedule = calculateSleepTimes(schedule);
+        auto sleep_schedule = calculateSleepSchedule(schedule);
 
         CHECK(findGuardWithMostSleep(sleep_schedule) == 10);
     }
 
+    SECTION("Find Sleepiest Minute")
+    {
+        auto const schedule = parseInput(sample_input);
+        auto sleep_schedule = calculateSleepSchedule(schedule);
 
+        CHECK(findSleepiestMinute(sleep_schedule[10]) == 24);
+        CHECK(findSleepiestMinute(sleep_schedule[99]) == 45);
+    }
+
+    SECTION("Strategy 1")
+    {
+        auto const schedule = parseInput(sample_input);
+        auto sleep_schedule = calculateSleepSchedule(schedule);
+
+        CHECK(calculateStrategy1(sleep_schedule) == 240);
+    }
 }

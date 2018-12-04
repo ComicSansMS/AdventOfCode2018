@@ -33,7 +33,7 @@ std::vector<ScheduleEntry> parseInput(std::string_view input)
         auto const time = date::make_time(hour, minute, 0);
         auto const timestamp = date::local_time<date::days>(date) + time.to_duration();
         auto const evt = match[6];
-        entries.push_back(ScheduleEntry{evt, timestamp});
+        entries.push_back(ScheduleEntry{evt, date, timestamp});
     }
 
     std::sort(begin(entries), end(entries),
@@ -42,7 +42,7 @@ std::vector<ScheduleEntry> parseInput(std::string_view input)
     return entries;
 }
 
-std::unordered_map<int, std::vector<SleepTime>> calculateSleepTimes(std::vector<ScheduleEntry> const& schedule)
+std::unordered_map<int, std::vector<SleepTime>> calculateSleepSchedule(std::vector<ScheduleEntry> const& schedule)
 {
     std::unordered_map<int, std::vector<SleepTime>> sleep_schedule;
     int current_guard = -1;
@@ -53,7 +53,7 @@ std::unordered_map<int, std::vector<SleepTime>> calculateSleepTimes(std::vector<
             sleep_schedule[current_guard];
         } else if(e.event == "falls asleep") {
             assert(current_guard != -1);
-            sleep_schedule[current_guard].push_back(SleepTime{e.timestamp, std::chrono::minutes(0)});
+            sleep_schedule[current_guard].push_back(SleepTime{e.date, e.timestamp, std::chrono::minutes(0)});
         } else {
             assert(e.event == "wakes up");
             assert(current_guard != -1);
@@ -78,4 +78,24 @@ int findGuardWithMostSleep(std::unordered_map<int, std::vector<SleepTime>> const
 {
     auto const rng = sleep_schedule | ranges::view::values | ranges::view::transform(totalSleepTimeForGuard);
     return ranges::max_element(rng).base().base()->first;
+}
+
+int findSleepiestMinute(std::vector<SleepTime> const& sleep_times)
+{
+    int minute_count[60] = {};
+    for(auto const& st : sleep_times) {
+        std::chrono::minutes const minutes_since_midnight = st.start_sleep - date::local_time<date::days>(st.date);
+        for(std::chrono::minutes i = minutes_since_midnight; i < minutes_since_midnight + st.sleep_duration; ++i) {
+            assert((i.count() >= 0) && (i.count() < 60));
+            ++minute_count[i.count()];
+        }
+    }
+    return static_cast<int>(std::distance(std::begin(minute_count),
+                            std::max_element(std::begin(minute_count), std::end(minute_count))));
+}
+
+int calculateStrategy1(std::unordered_map<int, std::vector<SleepTime>> const& sleep_schedule)
+{
+    auto const id = findGuardWithMostSleep(sleep_schedule);
+    return id * findSleepiestMinute(sleep_schedule.find(id)->second);
 }

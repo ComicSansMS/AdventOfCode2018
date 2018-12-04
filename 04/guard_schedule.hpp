@@ -11,20 +11,26 @@
 
 struct ScheduleEntry {
     std::string event;
+    date::year_month_day date;
     date::local_time<std::chrono::minutes> timestamp;
 };
 
 std::vector<ScheduleEntry> parseInput(std::string_view input);
 
 struct SleepTime {
+    date::year_month_day date;
     date::local_time<std::chrono::minutes> start_sleep;
     std::chrono::minutes sleep_duration;
 };
 
-std::unordered_map<int, std::vector<SleepTime>> calculateSleepTimes(std::vector<ScheduleEntry> const& schedule);
+std::unordered_map<int, std::vector<SleepTime>> calculateSleepSchedule(std::vector<ScheduleEntry> const& schedule);
 
 std::chrono::minutes totalSleepTimeForGuard(std::vector<SleepTime> const& sleep_times);
 
 int findGuardWithMostSleep(std::unordered_map<int, std::vector<SleepTime>> const& sleep_schedule);
+
+int findSleepiestMinute(std::vector<SleepTime> const& sleep_times);
+
+int calculateStrategy1(std::unordered_map<int, std::vector<SleepTime>> const& sleep_schedule);
 
 #endif
