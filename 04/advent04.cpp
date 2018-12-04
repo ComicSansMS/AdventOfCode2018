@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
 
     auto const sleep_schedule = calculateSleepSchedule(parseInput(*input));
     std::cout << "First result is " << calculateStrategy1(sleep_schedule) << std::endl;
-    //std::cout << "Second result is " << f.findNoneOverlap(rects) << std::endl;
+    std::cout << "Second result is " << calculateStrategy2(sleep_schedule) << std::endl;
 
     return 0;
 }

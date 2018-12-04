@@ -6,6 +6,7 @@
 #include <chrono>
 #include <ostream>
 #include <string_view>
+#include <tuple>
 #include <unordered_map>
 #include <vector>
 
@@ -29,8 +30,10 @@ std::chrono::minutes totalSleepTimeForGuard(std::vector<SleepTime> const& sleep_
 
 int findGuardWithMostSleep(std::unordered_map<int, std::vector<SleepTime>> const& sleep_schedule);
 
-int findSleepiestMinute(std::vector<SleepTime> const& sleep_times);
+std::tuple<int, int> findSleepiestMinute(std::vector<SleepTime> const& sleep_times);
 
 int calculateStrategy1(std::unordered_map<int, std::vector<SleepTime>> const& sleep_schedule);
+
+int calculateStrategy2(std::unordered_map<int, std::vector<SleepTime>> const& sleep_schedule);
 
 #endif

@@ -80,7 +80,7 @@ int findGuardWithMostSleep(std::unordered_map<int, std::vector<SleepTime>> const
     return ranges::max_element(rng).base().base()->first;
 }
 
-int findSleepiestMinute(std::vector<SleepTime> const& sleep_times)
+std::tuple<int, int> findSleepiestMinute(std::vector<SleepTime> const& sleep_times)
 {
     int minute_count[60] = {};
     for(auto const& st : sleep_times) {
@@ -90,12 +90,29 @@ int findSleepiestMinute(std::vector<SleepTime> const& sleep_times)
             ++minute_count[i.count()];
         }
     }
-    return static_cast<int>(std::distance(std::begin(minute_count),
-                            std::max_element(std::begin(minute_count), std::end(minute_count))));
+    auto sleepiest_minute = std::max_element(std::begin(minute_count), std::end(minute_count));
+    return std::make_tuple(static_cast<int>(std::distance(std::begin(minute_count), sleepiest_minute)),
+                           *sleepiest_minute);
 }
 
 int calculateStrategy1(std::unordered_map<int, std::vector<SleepTime>> const& sleep_schedule)
 {
     auto const id = findGuardWithMostSleep(sleep_schedule);
-    return id * findSleepiestMinute(sleep_schedule.find(id)->second);
+    return id * std::get<0>(findSleepiestMinute(sleep_schedule.find(id)->second));
+}
+
+int calculateStrategy2(std::unordered_map<int, std::vector<SleepTime>> const& sleep_schedule)
+{
+    int sleepiest_count = 0;
+    int sleepiest_guard = -1;
+    int sleepiest_minute = -1;
+    for(auto const& [guard_id, sleep_times] : sleep_schedule) {
+        auto const [sleepy_minute, sleepy_count] = findSleepiestMinute(sleep_times);
+        if(sleepy_count > sleepiest_count) {
+            sleepiest_count = sleepy_count;
+            sleepiest_guard = guard_id;
+            sleepiest_minute = sleepy_minute;
+        }
+    }
+    return sleepiest_guard * sleepiest_minute;
 }

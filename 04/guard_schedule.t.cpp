@@ -145,8 +145,8 @@ TEST_CASE("Guard Schedule")
         auto const schedule = parseInput(sample_input);
         auto sleep_schedule = calculateSleepSchedule(schedule);
 
-        CHECK(findSleepiestMinute(sleep_schedule[10]) == 24);
-        CHECK(findSleepiestMinute(sleep_schedule[99]) == 45);
+        CHECK(findSleepiestMinute(sleep_schedule[10]) == std::make_tuple(24, 2));
+        CHECK(findSleepiestMinute(sleep_schedule[99]) == std::make_tuple(45, 3));
     }
 
     SECTION("Strategy 1")
@@ -155,5 +155,13 @@ TEST_CASE("Guard Schedule")
         auto sleep_schedule = calculateSleepSchedule(schedule);
 
         CHECK(calculateStrategy1(sleep_schedule) == 240);
+    }
+
+    SECTION("Strategy 2")
+    {
+        auto const schedule = parseInput(sample_input);
+        auto sleep_schedule = calculateSleepSchedule(schedule);
+
+        CHECK(calculateStrategy2(sleep_schedule) == 4455);
     }
 }
