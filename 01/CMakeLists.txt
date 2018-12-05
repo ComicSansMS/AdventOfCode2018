@@ -4,7 +4,7 @@ target_link_libraries(01_calibration PUBLIC range-v3)
 add_executable(advent01 advent01.cpp)
 target_link_libraries(advent01 PUBLIC 01_calibration)
 
-file(COPY input.txt DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY input DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 if(TARGET Catch)
     add_executable(01_calibration_test calibration.t.cpp)

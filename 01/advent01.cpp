@@ -25,7 +25,7 @@ std::optional<std::string> readInput(char const* filename)
 
 int main(int argc, char* argv[])
 {
-    char const* input_filename = "input.txt";
+    char const* input_filename = "input";
     if(argc == 2) {
         input_filename = argv[1];
     }
