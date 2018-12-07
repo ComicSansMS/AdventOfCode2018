@@ -38,7 +38,6 @@ Polymer::iterator reduce(Polymer& l, Polymer::iterator start)
 
 void reduceAll(Polymer& p)
 {
-    auto const old_size = p.size();
     auto it = begin(p);
     while(it != end(p)) {
         it = reduce(p, it);
