@@ -31,6 +31,8 @@ public:
     int incomingEdgeCount(char node) const;
 
     std::string topologicalSort() const;
+
+    std::tuple<int, std::string> assemble(int nWorkers, int timeBaseline, char finalLetter) const;
 };
 
 #endif

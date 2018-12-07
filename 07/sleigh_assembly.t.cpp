@@ -48,4 +48,10 @@ Step F must be finished before step E can begin.)";
         Graph g2(std::vector<Edge>{{'E', 'B'}, {'E', 'C'}, {'B', 'D'}, {'B', 'A'}, {'C', 'D'}, {'D', 'A'}});
         CHECK(g2.topologicalSort() == "EBCDAFGHIJKLMNOPQRSTUVWXYZ");
     }
+
+    SECTION("Sleigh Assembly")
+    {
+        Graph g1(parseInput(sample_input));
+        CHECK(g1.assemble(2, 0, 'F') == std::make_tuple(15, std::string("CABFDE")));
+    }
 }

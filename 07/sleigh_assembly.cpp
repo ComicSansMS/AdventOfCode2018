@@ -6,7 +6,7 @@
 #include <cassert>
 #include <iterator>
 #include <numeric>
-#include <ostream>
+#include <optional>
 #include <regex>
 #include <string>
 #include <unordered_set>
@@ -55,10 +55,10 @@ int Graph::incomingEdgeCount(char node) const
     return m_counts[node - 'A'];
 }
 
-std::string Graph::topologicalSort() const
+namespace
 {
-    auto adj = m_adjacency;
-    auto counts = m_counts;
+std::string topologicalSortImpl(std::array<std::bitset<26>, 26> adj, std::array<int, 26> counts)
+{
     std::string ret;
     ret.reserve(26);
     while(ret.size() < 26) {
@@ -78,4 +78,80 @@ std::string Graph::topologicalSort() const
         }
     }
     return ret;
+}
+}
+
+std::string Graph::topologicalSort() const
+{
+    return topologicalSortImpl(m_adjacency, m_counts);
+}
+
+
+namespace
+{
+std::tuple<int, std::string> assembleImpl(std::array<std::bitset<26>, 26> adj, std::array<int, 26> counts,
+                                          int nWorkers, int timeBaseline, char finalLetter)
+{
+    std::string ret;
+    ret.reserve(26);
+    int timecount = 0;
+    struct Worker {
+        int timeLeft;
+        int letter;
+    };
+    std::vector<Worker> workers(nWorkers, Worker{-1, -1});
+    std::unordered_set<int> letters_worked_on;
+
+    auto pick_letter = [&]() -> std::optional<int> {
+        for(int from = 0; from < 26; ++from) {
+            if((counts[from] == 0) && (letters_worked_on.find(from) == end(letters_worked_on))) {
+                // found a candidate
+                counts[from] = -1;
+                letters_worked_on.insert(from);
+                return from;
+            }
+        }
+        return std::nullopt;
+    };
+    auto complete_letter = [&](int from) {
+        assert(letters_worked_on.find(from) != end(letters_worked_on));
+        for(int to = 0; to < 26; ++to) {
+            if(adj[to].test(from)) {
+                assert(counts[to] > 0);
+                --counts[to];
+                adj[to].reset(from);
+            }
+        }
+        ret.push_back(static_cast<char>('A' + from));
+        letters_worked_on.erase(from);
+    };
+
+    int const limit = (finalLetter - 'A') + 1;
+    for(; ret.size() < limit; ++timecount) {
+        for(auto& w : workers) {
+            if(w.timeLeft > 0) {
+                --w.timeLeft;
+                if(w.timeLeft == 0) {
+                    complete_letter(w.letter);
+                    w.letter = -1;
+                    w.timeLeft = -1;
+                }
+            }
+            if(w.letter == -1) {
+                if(auto next_letter = pick_letter(); next_letter && (*next_letter < limit)) {
+                    w.letter = *next_letter;
+                    w.timeLeft = *next_letter + timeBaseline + 1;
+                }
+            }
+        }
+    }
+    assert(std::all_of(begin(workers), end(workers),
+                       [](Worker const& w) { return (w.letter == -1) && (w.timeLeft == -1); }));
+    return std::make_tuple(timecount - 1, ret);
+}
+}
+
+std::tuple<int, std::string> Graph::assemble(int nWorkers, int timeBaseline, char finalLetter) const
+{
+    return assembleImpl(m_adjacency, m_counts, nWorkers, timeBaseline, finalLetter);
 }
