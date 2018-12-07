@@ -28,8 +28,6 @@ std::ostream& operator<<(std::ostream& os, Rectangle const& r);
 
 Rectangle getFieldDimensions(std::vector<Coordinate> const& coordinates);
 
-int getCellIndex(Rectangle const& dimensions, int x, int y);
-
 int manhattanDistance(Coordinate c1, Coordinate c2);
 
 struct FieldCell {

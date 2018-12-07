@@ -64,14 +64,6 @@ Rectangle getFieldDimensions(std::vector<Coordinate> const& coordinates)
                       ((minmax_y.second->y - minmax_y.first->y) + 3) );
 }
 
-int getCellIndex(Rectangle const& dimensions, int x, int y)
-{
-    int const rel_x = x - dimensions.left;
-    int const rel_y = y - dimensions.top;
-    int const rel_width = dimensions.width;
-    return (rel_y * rel_width) + rel_x;
-}
-
 int manhattanDistance(Coordinate c1, Coordinate c2)
 {
     return std::abs(c1.x - c2.x) + std::abs(c1.y - c2.y);
@@ -194,34 +186,3 @@ int findLargestAreaFloodFill(std::vector<Coordinate> const& points, int limit)
     }
     return max_area;
 }
-
-/*
-void floodFill(GridData& g, std::size_t start_row, std::size_t start_col)
-{
-    std::vector<Coordinates> stack;
-    stack.push_back(Coordinates(static_cast<int>(start_row), static_cast<int>(start_col)));
-    while(!stack.empty()) {
-        auto node = stack.back();
-        stack.pop_back();
-        if(g[node.r][node.c]) {
-            g[node.r][node.c].flip();
-        }
-        // left neighbor
-        if((node.r > 0) && (g[node.r - 1][node.c])) {
-            stack.emplace_back(node.r - 1, node.c);
-        }
-        // right neighbor
-        if((node.r < 127) && (g[node.r + 1][node.c])) {
-            stack.emplace_back(node.r + 1, node.c);
-        }
-        // top neighbor
-        if((node.c > 0) && (g[node.r][node.c - 1])) {
-            stack.emplace_back(node.r, node.c - 1);
-        }
-        // bottom neighbor
-        if((node.c < 127) && (g[node.r][node.c + 1])) {
-            stack.emplace_back(node.r, node.c + 1);
-        }
-    }
-}
-*/
