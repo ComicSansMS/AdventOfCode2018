@@ -117,4 +117,13 @@ TEST_CASE("Manhattan Area")
         auto const field = fillField(coordinates);
         CHECK(findLargestArea(field, coordinates) == 17);
     }
+
+    SECTION("Find Largest Area Flood Fill")
+    {
+        auto const coordinates = parseInput(sample_input);
+        CHECK(findLargestAreaFloodFill_SinglePoint(coordinates, 32, coordinates[3]) == 16);
+        CHECK(findLargestAreaFloodFill_SinglePoint(coordinates, 32, coordinates[0]) == 1);
+
+        CHECK(findLargestAreaFloodFill(coordinates, 32) == 16);
+    }
 }

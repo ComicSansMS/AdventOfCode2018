@@ -40,4 +40,8 @@ std::vector<FieldCell> fillField(std::vector<Coordinate> points);
 
 int findLargestArea(std::vector<FieldCell> const& field, std::vector<Coordinate> points);
 
+int findLargestAreaFloodFill_SinglePoint(std::vector<Coordinate> const& points, int limit, Coordinate const& start_point);
+
+int findLargestAreaFloodFill(std::vector<Coordinate> const& points, int limit);
+
 #endif

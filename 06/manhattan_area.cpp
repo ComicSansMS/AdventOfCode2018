@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <cassert>
 #include <iterator>
+#include <numeric>
 #include <ostream>
 #include <regex>
 #include <string>
@@ -145,3 +146,81 @@ int findLargestArea(std::vector<FieldCell> const& field, std::vector<Coordinate>
 
     return max_count;
 }
+
+int findLargestAreaFloodFill_SinglePoint(std::vector<Coordinate> const& points, int limit, Coordinate const& start_point)
+{
+    std::vector<Coordinate> stack;
+    stack.push_back(start_point);
+    std::unordered_map<int, std::unordered_map<int, int>> g;
+    auto total_mandist = [&points](int x, int y) {
+        return std::accumulate(begin(points), end(points), 0, [x, y](int acc, Coordinate const& p) {
+            return acc + manhattanDistance(p, Coordinate{x, y});
+        });
+    };
+    auto process_point = [&g, &stack, limit, total_mandist](int xx, int yy) {
+        if((total_mandist(xx, yy) < limit) && (g[xx][yy] == 0)) {
+            stack.push_back(Coordinate{xx, yy});
+        }
+    };
+    int total_count = 0;
+    while(!stack.empty()) {
+        auto node = stack.back();
+        stack.pop_back();
+
+        int const x = node.x;
+        int const y = node.y;
+        if(g[x][y] != 0) { continue; }
+        ++total_count;
+
+        g[x][y] = 1;
+        // left neighbor
+        process_point(x-1, y);
+        // right neighbor
+        process_point(x+1, y);
+        // top neighbor
+        process_point(x, y-1);
+        // bottom neighbor
+        process_point(x, y+1);
+    }
+    return total_count;
+}
+
+int findLargestAreaFloodFill(std::vector<Coordinate> const& points, int limit)
+{
+    int max_area = 0;
+    for(auto const& p : points) {
+        max_area = std::max(max_area, findLargestAreaFloodFill_SinglePoint(points, limit, p));
+    }
+    return max_area;
+}
+
+/*
+void floodFill(GridData& g, std::size_t start_row, std::size_t start_col)
+{
+    std::vector<Coordinates> stack;
+    stack.push_back(Coordinates(static_cast<int>(start_row), static_cast<int>(start_col)));
+    while(!stack.empty()) {
+        auto node = stack.back();
+        stack.pop_back();
+        if(g[node.r][node.c]) {
+            g[node.r][node.c].flip();
+        }
+        // left neighbor
+        if((node.r > 0) && (g[node.r - 1][node.c])) {
+            stack.emplace_back(node.r - 1, node.c);
+        }
+        // right neighbor
+        if((node.r < 127) && (g[node.r + 1][node.c])) {
+            stack.emplace_back(node.r + 1, node.c);
+        }
+        // top neighbor
+        if((node.c > 0) && (g[node.r][node.c - 1])) {
+            stack.emplace_back(node.r, node.c - 1);
+        }
+        // bottom neighbor
+        if((node.c < 127) && (g[node.r][node.c + 1])) {
+            stack.emplace_back(node.r, node.c + 1);
+        }
+    }
+}
+*/

@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
     auto const coordinates = parseInput(*input);
     auto const field = fillField(coordinates);
     std::cout << "First result is " << findLargestArea(field, coordinates) << std::endl;
-    //std::cout << "Second result is " << calculateStrategy2(sleep_schedule) << std::endl;
+    std::cout << "Second result is " << findLargestAreaFloodFill(coordinates, 10000) << std::endl;
 
     return 0;
 }
