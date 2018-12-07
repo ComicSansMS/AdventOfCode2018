@@ -46,7 +46,6 @@ std::unordered_map<int, std::vector<SleepTime>> calculateSleepSchedule(std::vect
 {
     std::unordered_map<int, std::vector<SleepTime>> sleep_schedule;
     int current_guard = -1;
-    date::local_time<std::chrono::minutes> current_start_sleep = date::local_time<std::chrono::minutes>();
     for(auto const& e : schedule) {
         if(e.event.substr(0, 7) == "Guard #") {
             current_guard = std::stoi(std::string{e.event.substr(7)});
