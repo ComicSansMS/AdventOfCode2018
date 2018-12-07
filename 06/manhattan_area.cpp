@@ -10,6 +10,7 @@
 #include <ostream>
 #include <regex>
 #include <string>
+#include <unordered_map>
 #include <unordered_set>
 
 bool operator==(Coordinate const& lhs, Coordinate const& rhs)
