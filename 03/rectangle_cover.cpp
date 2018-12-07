@@ -114,8 +114,6 @@ int Field::getCell(int x, int y) const
 void Field::placeRectangle(Rectangle const& r)
 {
     assert(overlap(m_dimensions, r) == r.width * r.height);
-    int const base_y = (r.top - m_dimensions.top);
-    int const base_x = (r.left - m_dimensions.left);
     for(int iy = 0; iy < r.height; ++iy) {
         int const y = r.top + iy;
         for(int ix = 0; ix < r.width; ++ix) {
