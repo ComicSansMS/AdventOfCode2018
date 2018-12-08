@@ -136,8 +136,6 @@ int Field::findNoneOverlap(std::vector<Rectangle> const& rects) const
     for(auto it = begin(rects);  it != end(rects); ++it) {
         Rectangle const& r = *it;
         bool has_overlap = false;
-        int const base_y = (r.top - m_dimensions.top);
-        int const base_x = (r.left - m_dimensions.left);
         for(int iy = 0; (iy < r.height) && !has_overlap; ++iy) {
             int const y = r.top + iy;
             for(int ix = 0; (ix < r.width) && !has_overlap; ++ix) {
