@@ -127,7 +127,7 @@ std::tuple<int, std::string> assembleImpl(std::array<std::bitset<26>, 26> adj, s
     };
 
     int const limit = (finalLetter - 'A') + 1;
-    for(; ret.size() < limit; ++timecount) {
+    for(; static_cast<int>(ret.size()) < limit; ++timecount) {
         for(auto& w : workers) {
             if(w.timeLeft > 0) {
                 --w.timeLeft;

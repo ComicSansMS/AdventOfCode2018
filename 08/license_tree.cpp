@@ -5,11 +5,10 @@
 #include <algorithm>
 #include <cassert>
 #include <iterator>
+#include <limits>
 #include <numeric>
-#include <optional>
 #include <regex>
 #include <string>
-#include <unordered_set>
 
 std::vector<int> parseInput(std::string_view input)
 {
@@ -76,12 +75,13 @@ int nodeValue(Node const& tree)
     int acc = 0;
     while(!stack.empty()) {
         Node const* current_node = stack.back();
+        assert(current_node->children.size() < std::numeric_limits<int>::max());
         stack.pop_back();
         if(current_node->children.empty()) {
             acc += std::accumulate(begin(current_node->metadata), end(current_node->metadata), 0);
         } else {
             for(auto const& m : current_node->metadata) {
-                if((m > 0) && (m <= current_node->children.size())) {
+                if((m > 0) && (m <= static_cast<int>(current_node->children.size()))) {
                     stack.push_back(&(current_node->children[m-1]));
                 }
             }
