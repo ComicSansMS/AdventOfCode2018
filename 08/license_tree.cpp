@@ -68,3 +68,25 @@ int metadataSum(Node const& tree)
     }
     return acc;
 }
+
+int nodeValue(Node const& tree)
+{
+    std::vector<Node const*> stack;
+    stack.push_back(&tree);
+    int acc = 0;
+    while(!stack.empty()) {
+        Node const* current_node = stack.back();
+        stack.pop_back();
+        if(current_node->children.empty()) {
+            acc += std::accumulate(begin(current_node->metadata), end(current_node->metadata), 0);
+        } else {
+            for(auto const& m : current_node->metadata) {
+                if((m > 0) && (m <= current_node->children.size())) {
+                    stack.push_back(&(current_node->children[m-1]));
+                }
+            }
+        }
+        
+    }
+    return acc;
+}

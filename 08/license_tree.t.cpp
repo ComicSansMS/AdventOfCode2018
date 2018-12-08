@@ -36,4 +36,18 @@ TEST_CASE("License Tree")
         auto tree = buildTree(parseInput(sample_input));
         CHECK(metadataSum(tree) == 138);
     }
+
+    SECTION("Node Value")
+    {
+        auto tree = buildTree(parseInput(sample_input));
+        auto const& node_B = tree.children[0];
+        CHECK(nodeValue(node_B) == 33);
+        auto const& node_D = tree.children[1].children[0];
+        CHECK(nodeValue(node_D) == 99);
+
+        auto const& node_C = tree.children[1];
+        CHECK(nodeValue(node_C) == 0);
+
+        CHECK(nodeValue(tree) == 66);
+    }
 }

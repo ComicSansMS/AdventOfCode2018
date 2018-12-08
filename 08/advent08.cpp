@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
 
     auto tree = buildTree(parseInput(*input));
     std::cout << "First result is " << metadataSum(tree) << std::endl;
-    //std::cout << "Second result is " << std::get<0>(g.assemble(5, 60, 'Z')) << std::endl;
+    std::cout << "Second result is " << nodeValue(tree) << std::endl;
 
     return 0;
 }

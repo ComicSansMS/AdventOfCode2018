@@ -15,4 +15,6 @@ Node buildTree(std::vector<int> const& serialized_tree);
 
 int metadataSum(Node const& tree);
 
+int nodeValue(Node const& tree);
+
 #endif
