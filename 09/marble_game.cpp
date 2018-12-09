@@ -31,34 +31,34 @@ Game::Game(GameParameters const& parameters)
     m_currentMarble = begin(m_field);
 }
 
-std::vector<int> Game::getField() const
+std::vector<int64_t> Game::getField() const
 {
-    std::vector<int> ret;
+    std::vector<int64_t> ret;
     ret.reserve(m_field.size());
     ret.assign(begin(m_field), end(m_field));
     return ret;
 }
 
-std::vector<int> Game::getPlayerScores() const
+std::vector<int64_t> Game::getPlayerScores() const
 {
     return m_playerScores;
 }
 
-int Game::getCurrentPlayer() const
+int64_t Game::getCurrentPlayer() const
 {
     return m_currentPlayer;
 }
 
 void Game::playTurn()
 {
-    auto const insertion_point = [this](std::list<int>::iterator it) {
+    auto const insertion_point = [this](std::list<int64_t>::iterator it) {
         for(int i = 0; i < 2; ++i) {
             if(it == end(m_field)) { it = begin(m_field); }
             ++it;
         }
         return it;
     };
-    auto const removal_point = [this](std::list<int>::iterator it) {
+    auto const removal_point = [this](std::list<int64_t>::iterator it) {
         for(int i = 0; i < 7; ++i) {
             if(it == begin(m_field)) { it = end(m_field); }
             --it;
@@ -69,7 +69,7 @@ void Game::playTurn()
         m_currentMarble = m_field.insert(insertion_point(m_currentMarble), m_currentTurn);
     } else {
         auto to_remove = removal_point(m_currentMarble);
-        int score = m_currentTurn + (*to_remove);
+        int64_t score = m_currentTurn + (*to_remove);
         m_currentMarble = m_field.erase(to_remove);
         if(m_currentMarble == end(m_field)) { m_currentMarble = begin(m_field); }
         m_playerScores[m_currentPlayer - 1] += score;
@@ -79,15 +79,15 @@ void Game::playTurn()
     if(m_currentPlayer > m_parameters.nPlayers) { m_currentPlayer = 1; }
 }
 
-int Game::getWinningScore() const
+int64_t Game::getWinningScore() const
 {
     return *std::max_element(begin(m_playerScores), end(m_playerScores));
 }
 
-int playGame(GameParameters const& parameters)
+int64_t playGame(GameParameters const& parameters)
 {
     Game g(parameters);
-    for(int i = 0; i < parameters.lastMarble; ++i) {
+    for(int64_t i = 0; i < parameters.lastMarble; ++i) {
         g.playTurn();
     }
     return g.getWinningScore();

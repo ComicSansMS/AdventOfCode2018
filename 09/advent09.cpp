@@ -36,9 +36,10 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    auto const game_parameters = parseInput(*input);
+    auto game_parameters = parseInput(*input);
     std::cout << "First result is " << playGame(game_parameters) << std::endl;
-    //std::cout << "Second result is " << nodeValue(tree) << std::endl;
+    game_parameters.lastMarble *= 100;
+    std::cout << "Second result is " << playGame(game_parameters) << std::endl;
 
     return 0;
 }

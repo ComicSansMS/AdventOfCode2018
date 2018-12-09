@@ -6,32 +6,32 @@
 #include <vector>
 
 struct GameParameters{
-    int nPlayers;
-    int lastMarble;
+    int64_t nPlayers;
+    int64_t lastMarble;
 };
 GameParameters parseInput(std::string_view input);
 
 class Game {
 private:
-    std::list<int> m_field;
+    std::list<int64_t> m_field;
     GameParameters m_parameters;
-    int m_currentPlayer;
-    std::vector<int> m_playerScores;
-    int m_currentTurn;
-    std::list<int>::iterator m_currentMarble;
+    int64_t m_currentPlayer;
+    std::vector<int64_t> m_playerScores;
+    int64_t m_currentTurn;
+    std::list<int64_t>::iterator m_currentMarble;
 public:
     Game(GameParameters const& parameters);
 
-    std::vector<int> getField() const;
+    std::vector<int64_t> getField() const;
 
-    std::vector<int> getPlayerScores() const;
+    std::vector<int64_t> getPlayerScores() const;
 
-    int getCurrentPlayer() const;
+    int64_t getCurrentPlayer() const;
 
     void playTurn();
 
-    int getWinningScore() const;
+    int64_t getWinningScore() const;
 };
 
-int playGame(GameParameters const& parameters);
+int64_t playGame(GameParameters const& parameters);
 #endif
