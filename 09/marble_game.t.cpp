@@ -6,7 +6,7 @@ TEST_CASE("License Tree")
 {
     SECTION("Parse Input")
     {
-        auto const game_parameters = parseInput("470 players; last marble is worth 72170 points\n");
+        auto const game_parameters = parseInput("470 players; last marble is worth 72170 points");
         CHECK(game_parameters.nPlayers == 470);
         CHECK(game_parameters.lastMarble == 72170);
     }

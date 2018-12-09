@@ -12,7 +12,7 @@
 
 GameParameters parseInput(std::string_view input)
 {
-    std::regex rx_line(R"(^(\d+) players; last marble is worth (\d+) points[\r\n]+$)");
+    std::regex rx_line(R"(^(\d+) players; last marble is worth (\d+) points[\r\n]?$)");
     std::match_results<std::string_view::iterator> matches;
     std::regex_match(begin(input), end(input), matches, rx_line);
 
