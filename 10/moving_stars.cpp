@@ -118,7 +118,7 @@ std::vector<std::vector<Vec2>> cluster(std::vector<Star> const& stars, int limit
     std::unordered_set<Vec2> all_stars;
     std::transform(begin(stars), end(stars), std::inserter(all_stars, end(all_stars)),
                    [](Star const& s) { return s.position; });
-    while(!all_stars.empty() && (clusters.size() < limit)) {
+    while(!all_stars.empty() && (static_cast<int>(clusters.size()) < limit)) {
         clusters.push_back( extract_cluster(all_stars) );
     }
     return clusters;
@@ -152,9 +152,9 @@ std::ostream& operator<<(std::ostream& os, std::vector<Star> const& stars)
 
 int findAndPrintMessage(std::vector<Star> stars, std::ostream& os)
 {
-    int const cluster_limit = stars.size() / 5;
+    int const cluster_limit = static_cast<int>(stars.size()) / 5;
     int seconds_elapsed = 0;
-    while(cluster(stars, cluster_limit).size() >= cluster_limit) {
+    while(static_cast<int>(cluster(stars, cluster_limit).size()) >= cluster_limit) {
         simulateStep(stars);
         ++seconds_elapsed;
     }
