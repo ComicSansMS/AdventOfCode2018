@@ -1,6 +1,12 @@
 #include <moving_stars.hpp>
 
 #include <range/v3/core.hpp>
+#include <range/v3/algorithm/for_each.hpp>
+#include <range/v3/algorithm/minmax_element.hpp>
+#include <range/v3/algorithm/transform.hpp>
+#include <range/v3/view/iota.hpp>
+#include <range/v3/view/transform.hpp>
+#include <range/v3/utility/iterator.hpp>
 
 #include <algorithm>
 #include <cassert>
@@ -24,61 +30,21 @@ std::vector<Star> parseInput(std::string_view input)
     auto const it_begin = regex_it(begin(input), end(input), rx_line);
     auto const it_end = regex_it();
 
-    std::vector<Star> ret;
-    std::transform(it_begin, it_end, std::back_inserter(ret),
-        [](std::match_results<std::string_view::iterator> const& match) -> Star {
-            return Star{ Vec2(std::stoi(match[1]), std::stoi(match[2])),
-                         Vec2(std::stoi(match[3]), std::stoi(match[4])) };
-    });
+    std::vector<Star> ret = ranges::make_iterator_range(it_begin, it_end) |
+        ranges::view::transform([](std::match_results<std::string_view::iterator> const& match) -> Star {
+                                    return Star{ Vec2(std::stoi(match[1]), std::stoi(match[2])),
+                                                 Vec2(std::stoi(match[3]), std::stoi(match[4])) };
+                                });
     return ret;
 }
 
 void simulateStep(std::vector<Star>& stars)
 {
-    for(auto& s : stars) {
+    ranges::for_each(stars, [](auto& s) {
         s.position.x += s.velocity.x;
         s.position.y += s.velocity.y;
-    }
+    });
 }
-/*
-int findLargestAreaFloodFill_SinglePoint(std::vector<Coordinate> const& points, int limit, Coordinate const& start_point)
-{
-    std::vector<Coordinate> stack;
-    stack.push_back(start_point);
-    std::unordered_map<int, std::unordered_map<int, int>> g;
-    auto total_mandist = [&points](int x, int y) {
-        return std::accumulate(begin(points), end(points), 0, [x, y](int acc, Coordinate const& p) {
-            return acc + manhattanDistance(p, Coordinate{x, y});
-        });
-    };
-    auto process_point = [&g, &stack, limit, total_mandist](int xx, int yy) {
-        if((total_mandist(xx, yy) < limit) && (g[xx][yy] == 0)) {
-            stack.push_back(Coordinate{xx, yy});
-        }
-    };
-    int total_count = 0;
-    while(!stack.empty()) {
-        auto node = stack.back();
-        stack.pop_back();
-
-        int const x = node.x;
-        int const y = node.y;
-        if(g[x][y] != 0) { continue; }
-        ++total_count;
-
-        g[x][y] = 1;
-        // left neighbor
-        process_point(x-1, y);
-        // right neighbor
-        process_point(x+1, y);
-        // top neighbor
-        process_point(x, y-1);
-        // bottom neighbor
-        process_point(x, y+1);
-    }
-    return total_count;
-}
-*/
 
 namespace {
 std::vector<Vec2> extract_cluster(std::unordered_set<Vec2>& s)
@@ -110,14 +76,20 @@ std::vector<Vec2> extract_cluster(std::unordered_set<Vec2>& s)
     }
     return ret;
 }
+
+std::unordered_set<Vec2> stars_to_position_set(std::vector<Star> const& stars)
+{
+    std::unordered_set<Vec2> ret;
+    ranges::transform(stars, ranges::inserter(ret, ranges::end(ret)),
+                      [](Star const& s) { return s.position; });
+    return ret;
+}
 }
 
 std::vector<std::vector<Vec2>> cluster(std::vector<Star> const& stars, int limit)
 {
     std::vector<std::vector<Vec2>> clusters;
-    std::unordered_set<Vec2> all_stars;
-    std::transform(begin(stars), end(stars), std::inserter(all_stars, end(all_stars)),
-                   [](Star const& s) { return s.position; });
+    std::unordered_set<Vec2> all_stars = stars_to_position_set(stars);
     while(!all_stars.empty() && (static_cast<int>(clusters.size()) < limit)) {
         clusters.push_back( extract_cluster(all_stars) );
     }
@@ -126,24 +98,16 @@ std::vector<std::vector<Vec2>> cluster(std::vector<Star> const& stars, int limit
 
 std::ostream& operator<<(std::ostream& os, std::vector<Star> const& stars)
 {
-    Vec2 min(std::min_element(begin(stars), end(stars), 
-                              [](Star const& l, Star const& r) { return l.position.x < r.position.x; })->position.x,
-             std::min_element(begin(stars), end(stars),
-                              [](Star const& l, Star const& r) { return l.position.y < r.position.y; })->position.y);
-    Vec2 max(std::max_element(begin(stars), end(stars), 
-                              [](Star const& l, Star const& r) { return l.position.x < r.position.x; })->position.x,
-             std::max_element(begin(stars), end(stars),
-                              [](Star const& l, Star const& r) { return l.position.y < r.position.y; })->position.y);
-    std::unordered_set<Vec2> all_stars;
-    std::transform(begin(stars), end(stars), std::inserter(all_stars, end(all_stars)),
-                   [](Star const& s) { return s.position; });
-    for(int y=0; y<=(max.y - min.y); ++y) {
-        for(int x=0; x<=(max.x - min.x); ++x) {
-            if(all_stars.find(Vec2(x + min.x, y + min.y)) != end(all_stars)) {
-                os << '#';
-            } else {
-                os << ' ';
-            }
+    auto const minmax_x = ranges::minmax_element(stars,
+        [](Star const& l, Star const& r) { return l.position.x < r.position.x; });
+    auto const minmax_y = ranges::minmax_element(stars,
+        [](Star const& l, Star const& r) { return l.position.y < r.position.y; });
+    Vec2 const min(minmax_x.first->position.x, minmax_y.first->position.y);
+    Vec2 const max(minmax_x.second->position.x, minmax_y.second->position.y);
+    std::unordered_set<Vec2> all_stars = stars_to_position_set(stars);
+    for(int y : ranges::view::iota(0, (max.y - min.y) + 1)) {
+        for(int x : ranges::view::iota(0, (max.x - min.x) + 1)) {
+            os << ((all_stars.find(Vec2(x + min.x, y + min.y)) != end(all_stars)) ? '#' : ' ');
         }
         os << '\n';
     }
