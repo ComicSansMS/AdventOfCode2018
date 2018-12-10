@@ -50,6 +50,6 @@ std::vector<std::vector<Vec2>> cluster(std::vector<Star> const& stars, int limit
 
 std::ostream& operator<<(std::ostream& os, std::vector<Star> const& stars);
 
-void findAndPrintMessage(std::vector<Star> stars, std::ostream& os);
+int findAndPrintMessage(std::vector<Star> stars, std::ostream& os);
 
 #endif

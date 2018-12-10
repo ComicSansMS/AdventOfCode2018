@@ -123,7 +123,7 @@ position=<-3,  6> velocity=< 2, -1>
     {
         auto stars = parseInput(sample_input);
         std::stringstream sstr;
-        findAndPrintMessage(stars, sstr);
+        int const seconds_elapsed = findAndPrintMessage(stars, sstr);
         CHECK(sstr.str() == R"(#   #  ###
 #   #   # 
 #   #   # 
@@ -133,5 +133,6 @@ position=<-3,  6> velocity=< 2, -1>
 #   #   # 
 #   #  ###
 )");
+        CHECK(seconds_elapsed == 3);
     }
 }

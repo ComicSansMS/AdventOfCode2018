@@ -38,9 +38,9 @@ int main(int argc, char* argv[])
 
     auto const stars = parseInput(*input);
     std::cout << "First result is \n";
-    findAndPrintMessage(stars, std::cout);
+    int const seconds_elapsed = findAndPrintMessage(stars, std::cout);
     std::flush(std::cout);
-    //std::cout << "Second result is " << playGame(game_parameters) << std::endl;
+    std::cout << "Second result is " << seconds_elapsed << std::endl;
 
     return 0;
 }

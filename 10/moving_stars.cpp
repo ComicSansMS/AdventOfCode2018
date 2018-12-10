@@ -150,11 +150,14 @@ std::ostream& operator<<(std::ostream& os, std::vector<Star> const& stars)
     return os;
 }
 
-void findAndPrintMessage(std::vector<Star> stars, std::ostream& os)
+int findAndPrintMessage(std::vector<Star> stars, std::ostream& os)
 {
     int const cluster_limit = stars.size() / 5;
+    int seconds_elapsed = 0;
     while(cluster(stars, cluster_limit).size() >= cluster_limit) {
         simulateStep(stars);
+        ++seconds_elapsed;
     }
     os << stars;
+    return seconds_elapsed;
 }
