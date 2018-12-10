@@ -1,3 +1,4 @@
 ignore:
   - external/**/*
   - **/advent*.cpp
+  - 10/moving_stars.hpp
