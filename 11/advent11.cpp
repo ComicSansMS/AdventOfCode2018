@@ -37,10 +37,10 @@ int main(int argc, char* argv[])
 
     int const grid_serial_number = std::stoi(*input);
 
-    //auto const stars = parseInput(*input);
-    auto const [x, y] = getLargestSquare(grid_serial_number);
-    std::cout << "First result is " << x << "," << y << std::endl;
-    //std::cout << "Second result is " << seconds_elapsed << std::endl;
+    auto const [p1, x1, y1] = getLargestSquare(grid_serial_number, 3);
+    std::cout << "First result is " << x1 << "," << y1 << std::endl;
+    auto const [p2, x2, y2, s2] = getLargestOfAllSquares(grid_serial_number);
+    std::cout << "Second result is " << x2 << "," << y2 << "," << s2 << std::endl;
 
     return 0;
 }

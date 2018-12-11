@@ -14,7 +14,13 @@ TEST_CASE("Fuel Cell Grid")
 
     SECTION("Get Largest Square")
     {
-        CHECK(getLargestSquare(18) == std::make_tuple(33, 45));
-        CHECK(getLargestSquare(42) == std::make_tuple(21, 61));
+        CHECK(getLargestSquare(18, 3) == std::make_tuple(29, 33, 45));
+        CHECK(getLargestSquare(42, 3) == std::make_tuple(30, 21, 61));
+    }
+
+    SECTION("Get Largest of All Squares")
+    {
+        CHECK(getLargestOfAllSquares(18) == std::make_tuple(113, 90, 269, 16));
+        CHECK(getLargestOfAllSquares(42) == std::make_tuple(119, 232, 251, 12));
     }
 }
