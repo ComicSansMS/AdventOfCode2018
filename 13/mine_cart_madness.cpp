@@ -22,7 +22,7 @@ Field parseInput(std::string_view input)
             ret.track_width = static_cast<int>(line.size());
             first_iter = false;
         }
-        assert(line.size() == ret.track_width);
+        assert(static_cast<int>(line.size()) == ret.track_width);
         for(int i=0; i<ret.track_width; ++i) {
             char const c = line[i];
             if(c == '<') {
