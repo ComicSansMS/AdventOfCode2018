@@ -206,14 +206,13 @@ TEST_CASE("Mine Cart Madness")
     }
 
     SECTION("Run to completion") {
-        char const* input = R"(/>-<\  
-|   |  
-| /<+-\
-| | | v
-\>+</ |
-  |   ^
-  \<->/
-)";
+        char const* input = R"(/>-<\  )" "\n"
+                            R"(|   |  )" "\n"
+                            R"(| /<+-\)" "\n"
+                            R"(| | | v)" "\n"
+                            R"(\>+</ |)" "\n"
+                            R"(  |   ^)" "\n"
+                            R"(  \<->/)" "\n";
         auto field = parseInput(input);
 
         CHECK(runToCompletion(field).coords == std::make_tuple(6, 4));
