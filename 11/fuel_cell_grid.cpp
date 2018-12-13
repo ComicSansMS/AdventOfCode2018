@@ -119,9 +119,10 @@ std::tuple<int, int, int> getLargestSquare_impl_row_sums(int size, std::vector<i
     int max_power = std::numeric_limits<int>::min();
     int max_x = -1;
     int max_y = -1;
-    for(int x : ranges::iota_view(1, (300 - size) + 1)) {
+    int const limit_outer_loop = (300 - size + 1);
+    for(int x = 1; x < limit_outer_loop; ++x) {
         int power = 0;
-        for(int y : ranges::iota_view(1, (300 - size) + 1)) {
+        for(int y = 1; y < limit_outer_loop; ++y) {
             if(y == 1) {
                 int const limit_inner_y = y+size;
                 for(int inner_y = y; inner_y < limit_inner_y; ++inner_y) {
