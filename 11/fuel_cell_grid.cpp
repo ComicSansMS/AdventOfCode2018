@@ -10,6 +10,7 @@
 #include <numeric>
 #include <string>
 #include <unordered_set>
+#include <vector>
 
 int calculatePowerLevel(int x, int y, int grid_serial_number)
 {
