@@ -4,6 +4,7 @@
 #include <array>
 #include <string_view>
 #include <unordered_set>
+#include <vector>
 
 struct Rule {
     std::array<bool, 5> before;

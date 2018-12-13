@@ -20,7 +20,7 @@ Plants Plants::parseFromInput(std::string_view input)
 
     Plants ret;
     assert(line.substr(0, 15) == "initial state: ");
-    for(int i=0; i<line.size() - 15; ++i) {
+    for(int i=0; i<static_cast<int>(line.size()) - 15; ++i) {
         char const c = line[i + 15];
         assert((c == '#') || (c == '.'));
         if(c == '#') {
