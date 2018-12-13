@@ -205,6 +205,139 @@ TEST_CASE("Mine Cart Madness")
         CHECK(crash[0].coords == std::make_tuple(7, 3));
     }
 
+    SECTION("Simulate Step Higher Cart Dies First")
+    {
+        char const* input = R"(/---\)" "\n"
+                            R"(v   |)" "\n"
+                            R"(|   |)" "\n"
+                            R"(|   |)" "\n"
+                            R"(^   |)" "\n"
+                            R"(\---/)" "\n";
+        auto f = parseInput(input);
+        CHECK(simulateStep(f).empty());
+
+        auto crash = simulateStep(f);
+        CHECK(crash.size() == 2);
+        // upper cart died first
+        CHECK(crash[0].cart_id == 1);
+        CHECK(crash[1].cart_id == 2);
+    }
+
+    SECTION("Simulate Step Turn Count Going Left")
+    {
+        char const* input = R"(  | | +<-)" "\n"
+                            R"( -+-+-/  )" "\n"
+                            R"(  | |    )" "\n"
+                            R"(--/      )" "\n";
+        auto f = parseInput(input);
+        // first intersection
+        CHECK(simulateStep(f).empty());
+        CHECK(f.carts[0].coords == std::make_tuple(6, 0));
+        CHECK(f.carts[0].direction == Cart::Down);
+        CHECK(simulateStep(f).empty());
+        CHECK(simulateStep(f).empty());
+        // second intersection
+        CHECK(f.carts[0].coords == std::make_tuple(5, 1));
+        CHECK(f.carts[0].direction == Cart::Left);
+        CHECK(simulateStep(f).empty());
+        CHECK(f.carts[0].coords == std::make_tuple(4, 1));
+        CHECK(f.carts[0].direction == Cart::Left);
+        CHECK(simulateStep(f).empty());
+        // third intersection
+        CHECK(f.carts[0].coords == std::make_tuple(3, 1));
+        CHECK(f.carts[0].direction == Cart::Left);
+        CHECK(simulateStep(f).empty());
+        CHECK(f.carts[0].coords == std::make_tuple(2, 1));
+        CHECK(f.carts[0].direction == Cart::Up);
+    }
+
+    SECTION("Simulate Step Turn Count Going Right")
+    {
+        char const* input = R"( -\   /- )" "\n"
+                            R"(  | | |  )" "\n"
+                            R"(  /-+-+- )" "\n"
+                            R"(->+ | |  )" "\n";
+        auto f = parseInput(input);
+        // first intersection
+        CHECK(simulateStep(f).empty());
+        CHECK(f.carts[0].coords == std::make_tuple(2, 3));
+        CHECK(f.carts[0].direction == Cart::Up);
+        CHECK(simulateStep(f).empty());
+        CHECK(simulateStep(f).empty());
+        // second intersection
+        CHECK(f.carts[0].coords == std::make_tuple(3, 2));
+        CHECK(f.carts[0].direction == Cart::Right);
+        CHECK(simulateStep(f).empty());
+        CHECK(f.carts[0].coords == std::make_tuple(4, 2));
+        CHECK(f.carts[0].direction == Cart::Right);
+        CHECK(simulateStep(f).empty());
+        // third intersection
+        CHECK(f.carts[0].coords == std::make_tuple(5, 2));
+        CHECK(f.carts[0].direction == Cart::Right);
+        CHECK(simulateStep(f).empty());
+        CHECK(f.carts[0].coords == std::make_tuple(6, 2));
+        CHECK(f.carts[0].direction == Cart::Down);
+    }
+
+    SECTION("Simulate Step Turn Count Going Up")
+    {
+        char const* input = R"(  |    )" "\n"
+                            R"( -+--  )" "\n"
+                            R"(  |    )" "\n"
+                            R"( -+--  )" "\n"
+                            R"(  | /- )" "\n"
+                            R"(  \-+  )" "\n"
+                            R"(    ^  )" "\n"
+                            R"(    |  )" "\n";
+        auto f = parseInput(input);
+        // first intersection
+        CHECK(simulateStep(f).empty());
+        CHECK(f.carts[0].coords == std::make_tuple(4, 5));
+        CHECK(f.carts[0].direction == Cart::Left);
+        CHECK(simulateStep(f).empty());
+        CHECK(simulateStep(f).empty());
+        CHECK(simulateStep(f).empty());
+        // second intersection
+        CHECK(f.carts[0].coords == std::make_tuple(2, 4));
+        CHECK(f.carts[0].direction == Cart::Up);
+        CHECK(simulateStep(f).empty());
+        CHECK(f.carts[0].coords == std::make_tuple(2, 3));
+        CHECK(f.carts[0].direction == Cart::Up);
+        CHECK(simulateStep(f).empty());
+        // third intersection
+        CHECK(f.carts[0].coords == std::make_tuple(2, 2));
+        CHECK(f.carts[0].direction == Cart::Up);
+        CHECK(simulateStep(f).empty());
+        CHECK(f.carts[0].coords == std::make_tuple(2, 1));
+        CHECK(f.carts[0].direction == Cart::Right);
+    }
+
+    SECTION("Simulate Step Turn Going Down")
+    {
+        char const* input = R"( |   )" "\n"
+                            R"( v   )" "\n"
+                            R"( \-\ )" "\n"
+                            R"(   | )" "\n"
+                            R"( --/ )" "\n";
+
+        auto f = parseInput(input);
+        // first redirection
+        CHECK(f.carts[0].coords == std::make_tuple(1, 1));
+        CHECK(f.carts[0].direction == Cart::Down);
+        CHECK(simulateStep(f).empty());
+        CHECK(f.carts[0].coords == std::make_tuple(1, 2));
+        CHECK(f.carts[0].direction == Cart::Right);
+        CHECK(simulateStep(f).empty());
+        CHECK(simulateStep(f).empty());
+        CHECK(simulateStep(f).empty());
+        // second redirection
+        CHECK(f.carts[0].coords == std::make_tuple(3, 3));
+        CHECK(f.carts[0].direction == Cart::Down);
+        CHECK(simulateStep(f).empty());
+        CHECK(f.carts[0].coords == std::make_tuple(3, 4));
+        CHECK(f.carts[0].direction == Cart::Left);
+    }
+
     SECTION("Run to completion") {
         char const* input = R"(/>-<\  )" "\n"
                             R"(|   |  )" "\n"
