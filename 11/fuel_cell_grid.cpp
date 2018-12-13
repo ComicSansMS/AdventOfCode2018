@@ -33,17 +33,26 @@ std::vector<int> precomputeGrid(int grid_serial_number)
 
 std::tuple<int, int, int> getLargestSquare_impl(int size, std::vector<int> const& grid)
 {
-    int max_power = 0;
+    int max_power = std::numeric_limits<int>::min();
     int max_x = -1;
     int max_y = -1;
     for(int x : ranges::iota_view(1, (300 - size) + 1)) {
+        int power = 0;
         for(int y : ranges::iota_view(1, (300 - size) + 1)) {
-            int power = 0;
-            for(int inner_x : ranges::iota_view(x, x + size)) {
-                for(int inner_y : ranges::iota_view(y, y + size)) {
-                    assert((inner_x >= 1) && (inner_x <= 300));
-                    assert((inner_y >= 1) && (inner_y <= 300));
-                    power += grid[(inner_y - 1)* 300 + (inner_x - 1)];
+            if(y == 1) {
+                for(int inner_x : ranges::iota_view(x, x + size)) {
+                    for(int inner_y : ranges::iota_view(y, y + size)) {
+                        assert((inner_x >= 1) && (inner_x <= 300));
+                        assert((inner_y >= 1) && (inner_y <= 300));
+                        power += grid[(inner_y - 1)* 300 + (inner_x - 1)];
+                    }
+                }
+            } else {
+                for(int xx : ranges::iota_view(x, x+size)) {
+                    // remove upper row
+                    power -= grid[(y - 2) * 300 + (xx - 1)];
+                    // add lower row
+                    power += grid[((y + size) - 2) * 300 + (xx - 1)];
                 }
             }
             if(power > max_power) {
@@ -55,7 +64,6 @@ std::tuple<int, int, int> getLargestSquare_impl(int size, std::vector<int> const
     }
     return std::make_tuple(max_power, max_x, max_y);
 }
-
 }
 
 std::tuple<int, int, int> getLargestSquare(int grid_serial_number, int size)
