@@ -205,4 +205,18 @@ TEST_CASE("Mine Cart Madness")
         CHECK(crash[0].coords == crash[1].coords);
         CHECK(crash[0].coords == std::make_tuple(7, 3));
     }
+
+    SECTION("Run to completion") {
+        char const* input = R"(/>-<\  
+|   |  
+| /<+-\
+| | | v
+\>+</ |
+  |   ^
+  \<->/
+)";
+        auto field = parseInput(input);
+
+        CHECK(runToCompletion(field).coords == std::make_tuple(6, 4));
+    }
 }

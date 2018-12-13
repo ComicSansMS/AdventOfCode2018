@@ -42,7 +42,8 @@ int main(int argc, char* argv[])
     std::cout << "First result is "
               << std::get<0>(crash.front().coords) << ","
               << std::get<1>(crash.front().coords) << std::endl;
-    //std::cout << "Second result is " << (plants.accumulate() + diff * (target_step - precompute_steps)) << std::endl;
+    auto const [r2x, r2y] = runToCompletion(field).coords;
+    std::cout << "Second result is " << r2x << "," << r2y << std::endl;
 
     return 0;
 }

@@ -177,3 +177,9 @@ std::vector<Cart> simulateStep(Field& f)
 
     return ret;
 }
+
+Cart runToCompletion(Field& f)
+{
+    while(f.carts.size() > 1) { simulateStep(f); }
+    return f.carts.front();
+}

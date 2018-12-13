@@ -23,4 +23,6 @@ Field parseInput(std::string_view input);
 
 std::vector<Cart> simulateStep(Field& f);
 
+Cart runToCompletion(Field& f);
+
 #endif
