@@ -32,6 +32,8 @@ std::vector<int> precomputeGrid(int grid_serial_number)
     return v;
 }
 
+// cache the row sums for each examined square to avoid reiterating rows all the times
+// turns out this doesn't pay off and is actually slower than recomputing the row sums
 std::tuple<int, int, int> getLargestSquare_impl_row_lookup(int size, std::vector<int> const& grid, std::vector<int>& rows)
 {
     int max_power = std::numeric_limits<int>::min();
@@ -114,7 +116,12 @@ std::tuple<int, int, int> getLargestSquare_impl(int size, std::vector<int> const
     return std::make_tuple(max_power, max_x, max_y);
 }
 
-std::tuple<int, int, int> getLargestSquare_impl_row_sums(int size, std::vector<int> const& grid, std::vector<int> const& row_sums)
+// here we pass an additional grid that contains the partial sum for each row
+// this allows direct calculation of the row sums of the examined squares without iterating
+// this is quite fast already; could be made faster by caching sums of whole squares as well,
+// but this is good enough for now
+std::tuple<int, int, int> getLargestSquare_impl_row_sums(int size, std::vector<int> const& grid,
+                                                         std::vector<int> const& row_sums)
 {
     int max_power = std::numeric_limits<int>::min();
     int max_x = -1;
@@ -126,29 +133,16 @@ std::tuple<int, int, int> getLargestSquare_impl_row_sums(int size, std::vector<i
             if(y == 1) {
                 int const limit_inner_y = y+size;
                 for(int inner_y = y; inner_y < limit_inner_y; ++inner_y) {
-                    if(x == 1) {
-                        power += row_sums[(inner_y - 1)* 300 + (x + size - 2)];
-                    } else {
-                        power += row_sums[(inner_y - 1)* 300 + (x + size - 2)] -
-                                 row_sums[(inner_y - 1)* 300 + (x - 2)];
-                    }
+                    power += row_sums[(inner_y - 1)* 300 + (x + size - 2)] -
+                             ((x == 1) ? 0 : row_sums[(inner_y - 1)* 300 + (x - 2)]);
                 }
             } else {
-                int diff_minus = 0;
-                int diff_plus = 0;
-                if(x == 1) {
-                    diff_minus = row_sums[(y - 2)* 300 + (x + size - 2)];
-                    diff_plus = row_sums[((y + size) - 2)* 300 + (x + size - 2)];
-                } else {
-                    diff_minus = row_sums[(y - 2)* 300 + (x + size - 2)] -
-                                  row_sums[(y - 2)* 300 + (x - 2)];
-                    diff_plus = row_sums[((y + size) - 2)* 300 + (x + size - 2)] -
-                                 row_sums[((y + size) - 2)* 300 + (x - 2)];
-                }
                 // remove upper row
-                power -= diff_minus;
+                power -= row_sums[(y - 2)* 300 + (x + size - 2)] -
+                         ((x == 1) ? 0 : row_sums[(y - 2)* 300 + (x - 2)]);
                 // add lower row
-                power += diff_plus;
+                power += row_sums[((y + size) - 2)* 300 + (x + size - 2)] -
+                         ((x==1) ? 0 : row_sums[((y + size) - 2)* 300 + (x - 2)]);
             }
             if(power > max_power) {
                 max_power = power;
@@ -160,18 +154,21 @@ std::tuple<int, int, int> getLargestSquare_impl_row_sums(int size, std::vector<i
     return std::make_tuple(max_power, max_x, max_y);
 }
 
-
-}
-
-std::tuple<int, int, int> getLargestSquare(int grid_serial_number, int size)
+std::vector<int> calculateRowSums(std::vector<int> const& grid)
 {
-    std::vector<int> const grid = precomputeGrid(grid_serial_number);
     std::vector<int> row_sums;
     row_sums.reserve(300 * 300);
     for(int y : ranges::view::iota(0, 300)) {
         std::partial_sum(begin(grid) + y*300, begin(grid) + (y+1)*300, std::back_inserter(row_sums));
     }
-    return getLargestSquare_impl_row_sums(size, grid, row_sums);
+    return row_sums;
+}
+}
+
+std::tuple<int, int, int> getLargestSquare(int grid_serial_number, int size)
+{
+    std::vector<int> const grid = precomputeGrid(grid_serial_number);
+    return getLargestSquare_impl_row_sums(size, grid, calculateRowSums(grid));
 }
 
 std::tuple<int, int, int, int> getLargestOfAllSquares(int grid_serial_number)
@@ -181,11 +178,7 @@ std::tuple<int, int, int, int> getLargestOfAllSquares(int grid_serial_number)
     int max_x = -1;
     int max_y = -1;
     int max_size = -1;
-    std::vector<int> row_sums;
-    row_sums.reserve(300 * 300);
-    for(int y : ranges::view::iota(0, 300)) {
-        std::partial_sum(begin(grid) + y*300, begin(grid) + (y+1)*300, std::back_inserter(row_sums));
-    }
+    std::vector<int> const row_sums = calculateRowSums(grid);
     for(int sq_size : ranges::iota_view(1, 301)) {
         auto const [power, x, y] = getLargestSquare_impl_row_sums(sq_size, grid, row_sums);
         if(power > max_power) {
