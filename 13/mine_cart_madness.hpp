@@ -7,7 +7,7 @@
 
 struct Cart {
     std::tuple<int, int> coords;
-    enum Direction_T { Up, Down, Left, Right } direction;
+    enum Direction_T { Up, Left, Down, Right } direction;
     int turn_counter;
     int cart_id;
 };

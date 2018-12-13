@@ -58,107 +58,54 @@ std::vector<Cart> simulateStep(Field& f)
     auto const has_collided = [&collided_carts](Cart const& c) {
         return std::find(begin(collided_carts), end(collided_carts), c.cart_id) != end(collided_carts);
     };
+    auto const turnLeft = [](Cart::Direction_T d)  { return static_cast<Cart::Direction_T>((d + 1) % 4); };
+    auto const turnRight = [](Cart::Direction_T d) { return static_cast<Cart::Direction_T>((d + 3) % 4); };
+    auto const turnPlus = [turnLeft, turnRight](Cart::Direction_T direction, int turn_counter) {
+        if(turn_counter == 0) {
+            return std::make_tuple(turnLeft(direction), 1);
+        } else if(turn_counter == 1) {
+            // go straight
+            return std::make_tuple(direction, 2);
+        } else {
+            assert(turn_counter == 2);
+            return std::make_tuple(turnRight(direction), 0);
+        }
+    };
+    auto const turn = [turnLeft, turnRight, turnPlus](Cart& c, char new_track) {
+        bool left_right = (c.direction == Cart::Left) || (c.direction == Cart::Right);
+        if(new_track == '/') {
+            c.direction = left_right ? turnLeft(c.direction) : turnRight(c.direction);
+        } else if(new_track == '\\') {
+            c.direction = left_right ? turnRight(c.direction) : turnLeft(c.direction);
+        } else if(new_track == '+') {
+            std::tie(c.direction, c.turn_counter) = turnPlus(c.direction, c.turn_counter);
+        } else {
+            assert((left_right && (new_track == '-')) || ((!left_right) && (new_track == '|')));
+        }
+    };
     for(auto& c : f.carts) {
         if(has_collided(c)) {
             // already collided carts no longer move
             continue;
         }
-        auto const [x,y] = c.coords;
+        auto& [x,y] = c.coords;
         assert(f.tracks[y * f.track_width + x] != ' ');
         if(c.direction == Cart::Left) {
             assert(x > 0);
-            --std::get<0>(c.coords);
-            char const new_track = f.tracks[y * f.track_width + (x - 1)];
-            if(new_track == '/') {
-                c.direction = Cart::Down;
-            } else if(new_track == '\\') {
-                c.direction = Cart::Up;
-            } else if(new_track == '+') {
-                if(c.turn_counter == 0) {
-                    c.direction = Cart::Down;
-                    c.turn_counter = 1;
-                } else if(c.turn_counter == 1) {
-                    // go straight
-                    c.turn_counter = 2;
-                } else {
-                    assert(c.turn_counter == 2);
-                    c.direction = Cart::Up;
-                    c.turn_counter = 0;
-                }
-            } else {
-                assert(new_track == '-');
-            }
+            --x;
         } else if(c.direction == Cart::Right) {
             assert(x < f.track_width - 1);
-            ++std::get<0>(c.coords);
-            char const new_track = f.tracks[y * f.track_width + (x + 1)];
-            if(new_track == '/') {
-                c.direction = Cart::Up;
-            } else if(new_track == '\\') {
-                c.direction = Cart::Down;
-            } else if(new_track == '+') {
-                if(c.turn_counter == 0) {
-                    c.direction = Cart::Up;
-                    c.turn_counter = 1;
-                } else if(c.turn_counter == 1) {
-                    // go straight
-                    c.turn_counter = 2;
-                } else {
-                    assert(c.turn_counter == 2);
-                    c.direction = Cart::Down;
-                    c.turn_counter = 0;
-                }
-            } else {
-                assert(new_track == '-');
-            }
+            ++x;
         } else if(c.direction == Cart::Up) {
             assert(y > 0);
-            --std::get<1>(c.coords);
-            char const new_track = f.tracks[(y - 1) * f.track_width + x];
-            if(new_track == '/') {
-                c.direction = Cart::Right;
-            } else if(new_track == '\\') {
-                c.direction = Cart::Left;
-            } else if(new_track == '+') {
-                if(c.turn_counter == 0) {
-                    c.direction = Cart::Left;
-                    c.turn_counter = 1;
-                } else if(c.turn_counter == 1) {
-                    // go straight
-                    c.turn_counter = 2;
-                } else {
-                    assert(c.turn_counter == 2);
-                    c.direction = Cart::Right;
-                    c.turn_counter = 0;
-                }
-            } else {
-                assert(new_track == '|');
-            }
+            --y;
         } else {
             assert(c.direction == Cart::Down);
             assert(y < f.track_height - 1);
-            ++std::get<1>(c.coords);
-            char const new_track = f.tracks[(y + 1) * f.track_width + x];
-            if(new_track == '/') {
-                c.direction = Cart::Left;
-            } else if(new_track == '\\') {
-                c.direction = Cart::Right;
-            } else if(new_track == '+') {
-                if(c.turn_counter == 0) {
-                    c.direction = Cart::Right;
-                    c.turn_counter = 1;
-                } else if(c.turn_counter == 1) {
-                    // go straight
-                    c.turn_counter = 2;
-                } else {
-                    assert(c.turn_counter == 2);
-                    c.direction = Cart::Left;
-                    c.turn_counter = 0;
-                }
-            } else {
-                assert(new_track == '|');
-            }
+            ++y;
         }
+        char const new_track = f.tracks[std::get<1>(c.coords) * f.track_width + std::get<0>(c.coords)];
+        turn(c, new_track);
 
         // collision detection
         auto collision_it = std::find_if(begin(f.carts), end(f.carts), [c, has_collided](Cart const& c1) {
