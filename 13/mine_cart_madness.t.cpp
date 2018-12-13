@@ -4,13 +4,12 @@
 
 TEST_CASE("Mine Cart Madness")
 {
-    char const* sample_input = R"(/->-\        
-|   |  /----\
-| /-+--+-\  |
-| | |  | v  |
-\-+-/  \-+--/
-  \------/   
-)";
+    char const* sample_input = R"(/->-\        )" "\n"
+                               R"(|   |  /----\)" "\n"
+                               R"(| /-+--+-\  |)" "\n"
+                               R"(| | |  | v  |)" "\n"
+                               R"(\-+-/  \-+--/)" "\n"
+                               R"(  \------/   )" "\n";
     SECTION("Parse Input")
     {
         Field const f = parseInput(sample_input);
