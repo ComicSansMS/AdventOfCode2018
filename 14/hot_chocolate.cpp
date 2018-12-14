@@ -66,7 +66,7 @@ int RecipeCombiner::cook_until2(std::vector<int> const& target_sequence)
 {
     for(;;) {
         combine();
-        std::vector<int>::iterator it_start = (scores.size() > 50) ? (end(scores) - (20 + target_sequence.size())) : begin(scores);
+        std::vector<int>::iterator it_start = (end(scores) - std::min(2 + target_sequence.size(), scores.size()));
         auto it_found = std::search(it_start, end(scores), begin(target_sequence), end(target_sequence));
         if(it_found != end(scores)) {
             return static_cast<int>(std::distance(begin(scores), it_found));
