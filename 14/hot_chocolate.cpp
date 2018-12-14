@@ -49,7 +49,7 @@ void RecipeCombiner::combine()
 
 std::string RecipeCombiner::cook_until(int target_score)
 {
-    while(scores.size() < target_score + 10) {
+    while(scores.size() < static_cast<std::size_t>(target_score + 10)) {
         combine();
     }
     std::string ret;
