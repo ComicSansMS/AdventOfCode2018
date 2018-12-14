@@ -9,13 +9,15 @@ std::vector<int> parseInput(std::string_view input);
 
 struct RecipeCombiner {
     std::vector<int> scores;
-    std::vector<int> elves;
+    std::vector<std::size_t> elves;
 
-    RecipeCombiner(std::vector<int> initial_scores);
+    RecipeCombiner();
 
     void combine();
 
     std::string cook_until(int target_score);
+
+    int cook_until2(std::vector<int> const& target_sequence);
 };
 
 #endif

@@ -37,10 +37,10 @@ int main(int argc, char* argv[])
     }
 
     int const target_number = std::stoi(*input);
-    RecipeCombiner rc(std::vector<int>{3, 7});
+    std::vector<int> const target_sequence = parseInput(*input);
 
-    std::cout << "First result is " << rc.cook_until(target_number) << std::endl;
-    std::cout << "Second result is " << std::endl;
+    std::cout << "First result is " << RecipeCombiner().cook_until(target_number) << std::endl;
+    std::cout << "Second result is " << RecipeCombiner().cook_until2(target_sequence) << std::endl;
 
     return 0;
 }

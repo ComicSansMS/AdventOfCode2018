@@ -19,15 +19,15 @@ std::vector<int> parseInput(std::string_view input)
     return ret;
 }
 
-RecipeCombiner::RecipeCombiner(std::vector<int> initial_scores)
-    :scores(initial_scores), elves(initial_scores.size(), 0)
+RecipeCombiner::RecipeCombiner()
+    :scores({3, 7}), elves(2, 0)
 {
     std::iota(begin(elves), end(elves), 0);
 }
 
 void RecipeCombiner::combine()
 {
-    int const sum = std::accumulate(begin(elves), end(elves), 0, [this](int acc, int elve) {
+    int const sum = std::accumulate(begin(elves), end(elves), 0, [this](int acc, std::size_t elve) {
         return acc + scores[elve];
     });
     std::vector<int> const digits = [](int i) {
@@ -42,7 +42,7 @@ void RecipeCombiner::combine()
     scores.insert(end(scores), digits.rbegin(), digits.rend());
 
     for(auto& e : elves) {
-        int const steps_forward = scores[e] + 1;
+        std::size_t const steps_forward = scores[e] + 1;
         e = (e + steps_forward) % scores.size();
     }
 }
@@ -60,4 +60,16 @@ std::string RecipeCombiner::cook_until(int target_score)
                        return static_cast<char>(d + '0');
                    });
     return ret;
+}
+
+int RecipeCombiner::cook_until2(std::vector<int> const& target_sequence)
+{
+    for(;;) {
+        combine();
+        std::vector<int>::iterator it_start = (scores.size() > 50) ? (end(scores) - (20 + target_sequence.size())) : begin(scores);
+        auto it_found = std::search(it_start, end(scores), begin(target_sequence), end(target_sequence));
+        if(it_found != end(scores)) {
+            return static_cast<int>(std::distance(begin(scores), it_found));
+        }
+    }
 }
