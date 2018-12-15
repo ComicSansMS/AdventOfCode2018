@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
     auto const stats = b.simulateBattle();
     //std::cout << b << std::endl;
     std::cout << "First result is " << stats.outcome << std::endl;
-    //std::cout << "Second result is " << std::endl;
+    std::cout << "Second result is " << winWithElves(parseInput(*input)).outcome << std::endl;
 
     return 0;
 }

@@ -44,6 +44,7 @@ TEST_CASE("Combat Simulator")
         REQUIRE(b.field.size() == 35);
         CHECK(b.nGoblins == 3);
         CHECK(b.nElves == 4);
+        CHECK(b.elf_attack_power == 3);
 
         CHECK(std::string_view(&b.field[0], 7) == "#######");
         CHECK(std::string_view(&b.field[7], 7) == "#.....#");
@@ -548,4 +549,118 @@ TEST_CASE("Combat Simulator")
         CHECK(stats.hitpoints_remaining == 937);
         CHECK(stats.outcome == 18740);
     }
+
+    SECTION("Win with Elves #1")
+    {
+        // #######       #######
+        // #.G...#       #..E..#   E(158)
+        // #...EG#       #...E.#   E(14)
+        // #.#.#G#  -->  #.#.#.#
+        // #..G#E#       #...#.#
+        // #.....#       #.....#
+        // #######       #######
+        auto const b = parseInput(sample_input_battle);
+
+        auto const stats = winWithElves(b);
+        CHECK(stats.turns_played == 29);
+        CHECK(stats.hitpoints_remaining == 172);
+        CHECK(stats.outcome == 4988);
+    }
+
+    SECTION("Win with Elves #3")
+    {
+        // #######       #######
+        // #E..EG#       #.E.E.#   E(200), E(23)
+        // #.#G.E#       #.#E..#   E(200)
+        // #E.##E#  -->  #E.##E#   E(125), E(200)
+        // #G..#.#       #.E.#.#   E(200)
+        // #..E#.#       #...#.#
+        // #######       #######
+        char const* sample_battle = "#######" "\n"
+                                    "#E..EG#" "\n"
+                                    "#.#G.E#" "\n"
+                                    "#E.##E#" "\n"
+                                    "#G..#.#" "\n"
+                                    "#..E#.#" "\n"
+                                    "#######" "\n";
+        auto b = parseInput(sample_battle);
+        auto const stats = winWithElves(b);
+        CHECK(stats.turns_played == 33);
+        CHECK(stats.hitpoints_remaining == 948);
+        CHECK(stats.outcome == 31284);
+    }
+
+    SECTION("Win with Elves #4")
+    {
+        // #######       #######
+        // #E.G#.#       #.E.#.#   E(8)
+        // #.#G..#       #.#E..#   E(86)
+        // #G.#.G#  -->  #..#..#
+        // #G..#.#       #...#.#
+        // #...E.#       #.....#
+        // #######       #######
+        char const* sample_battle = "#######" "\n"
+                                    "#E.G#.#" "\n"
+                                    "#.#G..#" "\n"
+                                    "#G.#.G#" "\n"
+                                    "#G..#.#" "\n"
+                                    "#...E.#" "\n"
+                                    "#######" "\n";
+        auto b = parseInput(sample_battle);
+        auto const stats = winWithElves(b);
+        CHECK(stats.turns_played == 37);
+        CHECK(stats.hitpoints_remaining == 94);
+        CHECK(stats.outcome == 3478);
+    }
+
+    SECTION("Win with Elves #5")
+    {
+        // #######       #######
+        // #.E...#       #...E.#   E(14)
+        // #.#..G#       #.#..E#   E(152)
+        // #.###.#  -->  #.###.#
+        // #E#G#G#       #.#.#.#
+        // #...#G#       #...#.#
+        // #######       #######
+        char const* sample_battle = "#######" "\n"
+                                    "#.E...#" "\n"
+                                    "#.#..G#" "\n"
+                                    "#.###.#" "\n"
+                                    "#E#G#G#" "\n"
+                                    "#...#G#" "\n"
+                                    "#######" "\n";
+        auto b = parseInput(sample_battle);
+        auto const stats = winWithElves(b);
+        CHECK(stats.turns_played == 39);
+        CHECK(stats.hitpoints_remaining == 166);
+        CHECK(stats.outcome == 6474);
+    }
+
+    SECTION("Win with Elves #6")
+    {
+        // #########       #########
+        // #G......#       #.......#
+        // #.E.#...#       #.E.#...#   E(38)
+        // #..##..G#       #..##...#
+        // #...##..#  -->  #...##..#
+        // #...#...#       #...#...#
+        // #.G...G.#       #.......#
+        // #.....G.#       #.......#
+        // #########       #########
+        char const* sample_battle = "#########" "\n"
+                                    "#G......#" "\n"
+                                    "#.E.#...#" "\n"
+                                    "#..##..G#" "\n"
+                                    "#...##..#" "\n"
+                                    "#...#...#" "\n"
+                                    "#.G...G.#" "\n"
+                                    "#.....G.#" "\n"
+                                    "#########" "\n";
+        auto b = parseInput(sample_battle);
+        auto const stats = winWithElves(b);
+        CHECK(stats.turns_played == 30);
+        CHECK(stats.hitpoints_remaining == 38);
+        CHECK(stats.outcome == 1140);
+    }
+
 }

@@ -48,6 +48,7 @@ struct Battlefield {
     std::vector<Unit> graveyard;
     int nElves;
     int nGoblins;
+    int elf_attack_power;
 
     char getField(int x, int y) const;
 
@@ -61,11 +62,13 @@ struct Battlefield {
 
     bool playTurn();
 
-    BattleStats simulateBattle();
+    BattleStats simulateBattle(bool abort_if_elf_dies = false);
 };
 
 std::ostream& operator<<(std::ostream& os, Battlefield const& b);
 
 Battlefield parseInput(std::string_view input);
+
+BattleStats winWithElves(Battlefield const& b);
 
 #endif

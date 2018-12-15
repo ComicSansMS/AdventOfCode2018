@@ -41,6 +41,7 @@ Battlefield parseInput(std::string_view input)
     int unit_id_count = 0;
     ret.nElves = 0;
     ret.nGoblins = 0;
+    ret.elf_attack_power = 3;
     while(std::getline(sstr, line)) {
         if(first_iter) {
             assert(line.size() < std::numeric_limits<int>::max());
@@ -223,7 +224,7 @@ bool Battlefield::attack(Unit const& u)
         [this](std::size_t lhs, std::size_t rhs) { return units[lhs].hitpoints < units[rhs].hitpoints; });
 
     auto& target = units[*target_it];
-    target.hitpoints -= 3;
+    target.hitpoints -= (u.faction == Faction::Elf) ? elf_attack_power : 3;
     if(target.hitpoints <= 0) {
         // target died from attack
         graveyard.push_back(target);
@@ -268,14 +269,30 @@ bool Battlefield::playTurn()
     return true;
 }
 
-BattleStats Battlefield::simulateBattle()
+BattleStats Battlefield::simulateBattle(bool abort_if_elf_dies)
 {
     BattleStats stats{0, 0, 0};
+    int const initial_elf_count = nElves;
     while(playTurn()) {
         ++stats.turns_played;
+        if(abort_if_elf_dies && nElves != initial_elf_count) { return BattleStats{-1, -1, -1}; }
     }
+    if(abort_if_elf_dies && nElves != initial_elf_count) { return BattleStats{-1, -1, -1}; }
     stats.hitpoints_remaining = std::accumulate(begin(units), end(units), 0,
                                                 [](int acc, Unit const& u) { return acc + u.hitpoints; });
     stats.outcome = stats.hitpoints_remaining * stats.turns_played;
     return stats;
+}
+
+BattleStats winWithElves(Battlefield const& b)
+{
+    for(int i=4; ; ++i) {
+        Battlefield tmp = b;
+        tmp.elf_attack_power = i;
+        auto const stats = tmp.simulateBattle(true);
+        if(stats.outcome != -1) {
+            assert(tmp.nElves == b.nElves);
+            return stats;
+        }
+    }
 }
