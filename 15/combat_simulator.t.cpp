@@ -27,8 +27,8 @@ TEST_CASE("Combat Simulator")
 
     SECTION("Faction Negation")
     {
-        CHECK(!Faction::Elf == Faction::Goblin);
-        CHECK(!Faction::Goblin == Faction::Elf);
+        CHECK((!Faction::Elf) == Faction::Goblin);
+        CHECK((!Faction::Goblin) == Faction::Elf);
     }
 
     char const* sample_input_parse = "#######" "\n"
