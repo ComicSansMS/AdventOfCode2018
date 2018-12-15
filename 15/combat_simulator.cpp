@@ -151,7 +151,7 @@ std::vector<Position> Battlefield::shortestPaths(Unit const& u) const
     std::vector<Position> candidates;
 
     auto push_neighbor =
-        [this, distance, getHelper, &stack, &candidates, &u](int pred_dist, Position const& pred_pos, int x, int y) {
+        [this, getHelper, &stack, &candidates, &u](int pred_dist, Position const& pred_pos, int x, int y) {
             if(getField(x, y) == '#') { return; }
             if(hasUnit(x, y)) { return; }
             Position const pos{x, y};
