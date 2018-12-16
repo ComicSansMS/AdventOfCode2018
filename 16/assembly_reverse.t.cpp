@@ -166,6 +166,7 @@ TEST_CASE("Assembly Reverse")
         p.samples.push_back(InstructionSample{Registers{0,5,7,0}, Instruction{2,1,2,3}, Registers{0,5,7,35}});
         // muli
         p.samples.push_back(InstructionSample{Registers{0,5,7,0}, Instruction{3,2,9,3}, Registers{0,5,7,63}});
+        p.samples.push_back(InstructionSample{Registers{0,5,7,0}, Instruction{3,1,9,3}, Registers{0,5,7,45}});
         // banr
         p.samples.push_back(InstructionSample{Registers{0,0xf0,0xaa,0}, Instruction{4,1,2,3},
                             Registers{0,0xf0,0xaa,0xa0}});

@@ -346,14 +346,11 @@ std::array<Opcode, 16> determineOpcodes(Program const& p)
             int const opc = p.samples[i].instruction.Opcode;
             auto const& g = guesses[i];
             if(g.size() == 1) {
-                if(deduced_ops.find(opc) == end(deduced_ops)) {
-                    Opcode const deduced_opcode = g.back();
-                    deduced_ops[opc] = deduced_opcode;
-                    for(auto& gs : guesses) {
-                        gs.erase(std::remove(begin(gs), end(gs), deduced_opcode), end(gs));
-                    }
-                } else {
-                    assert(deduced_ops[opc] == g.back());
+                assert(deduced_ops.find(opc) == end(deduced_ops));
+                Opcode const deduced_opcode = g.back();
+                deduced_ops[opc] = deduced_opcode;
+                for(auto& gs : guesses) {
+                    gs.erase(std::remove(begin(gs), end(gs), deduced_opcode), end(gs));
                 }
             }
         }
