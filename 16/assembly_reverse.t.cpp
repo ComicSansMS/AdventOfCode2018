@@ -152,4 +152,81 @@ TEST_CASE("Assembly Reverse")
         auto const program = parseInput(sample_input);
         CHECK(countSamples3OrMore(program) == 1);
     }
+
+    SECTION("Determine Opcodes")
+    {
+        Program p;
+        // addr
+        p.samples.push_back(InstructionSample{Registers{0,99,10,0}, Instruction{0,1,2,3}, Registers{0,99,10,109}});
+        p.samples.push_back(InstructionSample{Registers{99,0,10,0}, Instruction{0,0,2,3}, Registers{99,0,10,109}});
+        // addi
+        p.samples.push_back(InstructionSample{Registers{0,0,10,0}, Instruction{1,2,99,3}, Registers{0,0,10,109}});
+        p.samples.push_back(InstructionSample{Registers{0,0,10,0}, Instruction{1,2,15,3}, Registers{0,0,10,25}});
+        // mulr
+        p.samples.push_back(InstructionSample{Registers{0,5,7,0}, Instruction{2,1,2,3}, Registers{0,5,7,35}});
+        // muli
+        p.samples.push_back(InstructionSample{Registers{0,5,7,0}, Instruction{3,2,9,3}, Registers{0,5,7,63}});
+        // banr
+        p.samples.push_back(InstructionSample{Registers{0,0xf0,0xaa,0}, Instruction{4,1,2,3},
+                            Registers{0,0xf0,0xaa,0xa0}});
+        // bani
+        p.samples.push_back(InstructionSample{Registers{0,0xf0,2,0}, Instruction{5,1,0xaa,3},
+                            Registers{0,0xf0,2,0xa0}});
+        // borr
+        p.samples.push_back(InstructionSample{Registers{0,0x55,0xaa,0}, Instruction{6,1,2,3},
+                            Registers{0,0x55,0xaa,0xff}});
+        // bori
+        p.samples.push_back(InstructionSample{Registers{0,0x55,2,0}, Instruction{7,1,0xaa,3},
+                            Registers{0,0x55,2,0xff}});
+        // setr
+        p.samples.push_back(InstructionSample{Registers{0,123,2,0}, Instruction{8,1,2,3}, Registers{0,123,2,123}});
+        // seti
+        p.samples.push_back(InstructionSample{Registers{0,0,2,0}, Instruction{9,123,55,3}, Registers{0,0,2,123}});
+        // gtir
+        p.samples.push_back(InstructionSample{Registers{9,9,2,9}, Instruction{10,8,2,3}, Registers{9,9,2,1}});
+        // gtri
+        p.samples.push_back(InstructionSample{Registers{9,9,2,9}, Instruction{11,2,8,3}, Registers{9,9,2,0}});
+        // gtrr
+        p.samples.push_back(InstructionSample{Registers{9,2,3,100}, Instruction{12,2,1,3}, Registers{9,2,3,1}});
+        // eqir
+        p.samples.push_back(InstructionSample{Registers{9,9,2,100}, Instruction{13,100,3,3}, Registers{9,9,2,1}});
+        // eqri
+        p.samples.push_back(InstructionSample{Registers{9,9,2,100}, Instruction{14,3,100,3}, Registers{9,9,2,1}});
+        // eqrr
+        p.samples.push_back(InstructionSample{Registers{9,9,100,100}, Instruction{15,2,3,3}, Registers{9,9,100,1}});
+
+        auto map = determineOpcodes(p);
+        CHECK(map[0] == Opcode::addr);
+        CHECK(map[1] == Opcode::addi);
+        CHECK(map[2] == Opcode::mulr);
+        CHECK(map[3] == Opcode::muli);
+        CHECK(map[4] == Opcode::banr);
+        CHECK(map[5] == Opcode::bani);
+        CHECK(map[6] == Opcode::borr);
+        CHECK(map[7] == Opcode::bori);
+        CHECK(map[8] == Opcode::setr);
+        CHECK(map[9] == Opcode::seti);
+        CHECK(map[10] == Opcode::gtir);
+        CHECK(map[11] == Opcode::gtri);
+        CHECK(map[12] == Opcode::gtrr);
+        CHECK(map[13] == Opcode::eqir);
+        CHECK(map[14] == Opcode::eqri);
+        CHECK(map[15] == Opcode::eqrr);
+    }
+
+    SECTION("Execute Program")
+    {
+        std::array<Opcode, 16> opcode_map;
+        for(int i=0; i<16; ++i) { opcode_map[i] = static_cast<Opcode>(i); }
+        Program p;
+        // addi r2 3 r3     -> 0 0 0 3
+        p.program.push_back(Instruction{1, 2, 3, 3});
+        // mulr r3 r3 r1    -> 0 9 0 3
+        p.program.push_back(Instruction{2, 3, 3, 1});
+        // setr r1 r0       -> 9 9 0 3
+        p.program.push_back(Instruction{8, 1, 9, 0});
+        // muli r0 3 r0     -> 27 9 0 3
+        p.program.push_back(Instruction{3, 0, 3, 0});
+        CHECK(executeProgram(p, opcode_map) == Registers{27, 9, 0, 3});
+    }
 }
