@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <cassert>
-#include <deque>
 #include <iterator>
 #include <limits>
 #include <numeric>
@@ -10,6 +9,7 @@
 #include <sstream>
 #include <string>
 #include <tuple>
+#include <unordered_map>
 
 Program parseInput(std::string_view input)
 {
@@ -327,6 +327,52 @@ std::vector<Opcode> guessingGame(InstructionSample const& s)
 
 int countSamples3OrMore(Program const& p)
 {
-    return std::count_if(begin(p.samples), end(p.samples),
-                         [](InstructionSample const& s) { return guessingGame(s).size() >= 3; });
+    return static_cast<int>(
+        std::count_if(begin(p.samples), end(p.samples),
+                      [](InstructionSample const& s) { return guessingGame(s).size() >= 3; }));
+}
+
+std::array<Opcode, 16> determineOpcodes(Program const& p)
+{
+    std::vector<std::vector<Opcode>> guesses;
+    guesses.reserve(p.samples.size());
+    for(auto const& s : p.samples) {
+        guesses.push_back(guessingGame(s));
+    }
+
+    std::unordered_map<int, Opcode> deduced_ops;
+    while(deduced_ops.size() < 16) {
+        for(int i = 0; i < p.samples.size(); ++i) {
+            int const opc = p.samples[i].instruction.Opcode;
+            auto const& g = guesses[i];
+            if(g.size() == 1) {
+                if(deduced_ops.find(opc) == end(deduced_ops)) {
+                    Opcode const deduced_opcode = g.back();
+                    deduced_ops[opc] = deduced_opcode;
+                    for(auto& gs : guesses) {
+                        gs.erase(std::remove(begin(gs), end(gs), deduced_opcode), end(gs));
+                    }
+                } else {
+                    assert(deduced_ops[opc] == g.back());
+                }
+            }
+        }
+    }
+
+    std::array<Opcode, 16> ret;
+    for(int i = 0; i < 16; ++i) {
+        assert(deduced_ops.find(i) != end(deduced_ops));
+        ret[i] = deduced_ops[i];
+    }
+    return ret;
+}
+
+Registers executeProgram(Program const& p, std::array<Opcode, 16> const& opcode_map)
+{
+    Registers r = {0, 0, 0, 0};
+    for(auto const& i : p.program) {
+        Opcode const opc = opcode_map[i.Opcode];
+        r = getFunctionFor(opc)(i, r);
+    }
+    return r;
 }

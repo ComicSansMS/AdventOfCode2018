@@ -73,4 +73,8 @@ std::vector<Opcode> guessingGame(InstructionSample const& s);
 
 int countSamples3OrMore(Program const& p);
 
+std::array<Opcode, 16> determineOpcodes(Program const& p);
+
+Registers executeProgram(Program const& p, std::array<Opcode, 16> const& opcode_map);
+
 #endif

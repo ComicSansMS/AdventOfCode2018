@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
     auto const program = parseInput(*input);
 
     std::cout << "First result is " << countSamples3OrMore(program) << std::endl;
-    //std::cout << "Second result is " << winWithElves(parseInput(*input)).outcome << std::endl;
+    std::cout << "Second result is " << executeProgram(program, determineOpcodes(program))[0] << std::endl;
 
     return 0;
 }
