@@ -342,7 +342,7 @@ std::array<Opcode, 16> determineOpcodes(Program const& p)
 
     std::unordered_map<int, Opcode> deduced_ops;
     while(deduced_ops.size() < 16) {
-        for(int i = 0; i < p.samples.size(); ++i) {
+        for(int i = 0; i < static_cast<int>(p.samples.size()); ++i) {
             int const opc = p.samples[i].instruction.Opcode;
             auto const& g = guesses[i];
             if(g.size() == 1) {
