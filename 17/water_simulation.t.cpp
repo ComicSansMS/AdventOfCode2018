@@ -309,9 +309,10 @@ TEST_CASE("Water Simulation")
     {
         auto sim = parseInput(sample_input);
         std::stringstream sstr;
-        auto const count = simulateFlow(sim);
+        auto const [count1, count2] = simulateFlow(sim);
         INFO(sim);
-        CHECK(count == 57);
+        CHECK(count1 == 57);
+        CHECK(count2 == 29);
         sstr << sim;
         CHECK(sstr.str() == ".......+........" "\n"
                             ".......|.....#.." "\n"

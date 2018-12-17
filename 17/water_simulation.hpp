@@ -74,6 +74,6 @@ std::ostream& operator<<(std::ostream& os, Simulation const& sim);
 
 bool spawnWater(Simulation& sim);
 
-int64_t simulateFlow(Simulation& sim);
+std::tuple<int64_t, int64_t> simulateFlow(Simulation& sim);
 
 #endif

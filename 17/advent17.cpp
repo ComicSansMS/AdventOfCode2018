@@ -38,9 +38,10 @@ int main(int argc, char* argv[])
     }
 
     auto sim = parseInput(*input);
+    auto const [r1, r2] = simulateFlow(sim);
 
-    std::cout << "First result is " << simulateFlow(sim) << std::endl;
-    //std::cout << "Second result is " << executeProgram(program, determineOpcodes(program))[0] << std::endl;
+    std::cout << "First result is " << r1 << std::endl;
+    std::cout << "Second result is " << r2 << std::endl;
 
     return 0;
 }

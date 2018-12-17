@@ -11,16 +11,9 @@
 #include <tuple>
 #include <unordered_map>
 
-#include <iostream>
-#include <fstream>
-
-std::ofstream logger;
-
 Simulation parseInput(std::string_view input)
 {
     std::regex rx_line(R"((\w)=(\d+), (\w)=(\d+)\.\.(\d+))");
-
-    logger.open("out.log");
 
     using regex_it = std::regex_iterator<std::string_view::iterator>;
     auto const it_begin = regex_it(begin(input), end(input), rx_line);
@@ -202,12 +195,10 @@ bool Simulation::spawn(Vec2 const& spawn_source)
 
 bool spawnWater(Simulation& sim)
 {
-    //std::cout << ".";
-    //logger << sim << "\n\n\n";
     return sim.spawn(sim.m_source);
 }
 
-int64_t simulateFlow(Simulation& sim)
+std::tuple<int64_t, int64_t> simulateFlow(Simulation& sim)
 {
     for(;;) {
         bool did_fill_something = false;
@@ -237,17 +228,17 @@ int64_t simulateFlow(Simulation& sim)
             }
         }
         if(!did_fill_something) { break; }
-        logger << sim << "\n\n\n\n\n";
     }
-
-    logger << sim;
 
     auto const it = std::find(begin(sim.m_vfield), end(sim.m_vfield), Field::Clay);
     int const dist = static_cast<int>(std::distance(begin(sim.m_vfield), it));
     int const stride = sim.m_limits.max.x - sim.m_limits.min.x;
     int start_row = dist / stride;
+    auto const it_begin = begin(sim.m_vfield) + (start_row * stride);
 
-    return std::count_if(begin(sim.m_vfield) + (start_row * stride), end(sim.m_vfield), [](auto const f) {
+    return std::make_tuple(std::count_if(it_begin, end(sim.m_vfield), [](auto const f) {
             return (f == Field::Water_Flowing) || (f == Field::Water_Still);
-        });
+        }), std::count_if(it_begin, end(sim.m_vfield), [](auto const f) {
+            return (f == Field::Water_Still);
+        }));
 }
