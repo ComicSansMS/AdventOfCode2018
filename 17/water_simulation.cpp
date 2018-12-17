@@ -208,7 +208,6 @@ std::tuple<int64_t, int64_t> simulateFlow(Simulation& sim)
             if(!flow_end) { /* fell out of the map */ spawn_point.pop_back(); continue; }
             auto const [left_status, left_position] = sim.flowLeft(*flow_end);
             auto const [right_status, right_position] = sim.flowRight(*flow_end);
-            assert((left_status != Status::NoPosition) && (right_status != Status::NoPosition));
             if((left_status == Status::FoundPosition) && (right_status == Status::FoundPosition)) {
                 did_fill_something = did_fill = true;
                 for(int i=left_position.x; i<=right_position.x; ++i) {
