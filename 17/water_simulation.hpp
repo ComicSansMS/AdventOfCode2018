@@ -56,9 +56,8 @@ enum class Status {
 
 struct Simulation {
     Limit m_limits;
-    std::unordered_map<Vec2, Field> m_field;
     Vec2 m_source;
-    std::vector<Field> m_vfield;
+    std::vector<Field> m_field;
 
     Field& getField(Vec2 const& pos);
     Field getField(Vec2 const& pos) const;

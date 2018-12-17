@@ -30,7 +30,8 @@ TEST_CASE("Water Simulation")
                                 "y=13, x=498..504" "\n";
     SECTION("Parse Input")
     {
-        auto const [limits, field, source, vfield] = parseInput(sample_input);
+        auto const sim = parseInput(sample_input);
+        auto const [limits, source, field] = sim;
 
         //   44444455555555
         //   99999900000000
@@ -49,13 +50,6 @@ TEST_CASE("Water Simulation")
         // 11 ....#.....#...
         // 12 ....#.....#...
         // 13 ....#######...
-        CHECK(field.size() == 34);
-        CHECK(field.find(Vec2(498, 1)) == end(field));
-        CHECK(field.find(Vec2(498, 2))->second == Field::Clay);
-        CHECK(field.find(Vec2(498, 3))->second == Field::Clay);
-        CHECK(field.find(Vec2(498, 4))->second == Field::Clay);
-        CHECK(field.find(Vec2(498, 5)) == end(field));
-
         CHECK(limits.min.x == 493);
         CHECK(limits.max.x == 508);
         CHECK(limits.min.y == 0);
@@ -63,7 +57,13 @@ TEST_CASE("Water Simulation")
 
         CHECK(source == Vec2(500, 0));
 
-        CHECK(vfield.size() == 16 * 14);
+        CHECK(field.size() == 16 * 14);
+
+        CHECK(sim.getField(Vec2(498, 1)) == Field::Empty);
+        CHECK(sim.getField(Vec2(498, 2)) == Field::Clay);
+        CHECK(sim.getField(Vec2(498, 3)) == Field::Clay);
+        CHECK(sim.getField(Vec2(498, 4)) == Field::Clay);
+        CHECK(sim.getField(Vec2(498, 5)) == Field::Empty);
     }
 
     SECTION("Printing")

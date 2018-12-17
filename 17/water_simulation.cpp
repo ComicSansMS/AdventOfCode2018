@@ -22,24 +22,25 @@ Simulation parseInput(std::string_view input)
     Simulation ret {
         Limit{ Vec2(500, 0),
                Vec2(500, 0) },
-        {}, Vec2(500, 0) };
+        Vec2(500, 0), {} };
+    std::unordered_map<Vec2, Field> tmpfield;
     auto adjustLimits = [&ret](int min_x, int max_x, int min_y, int max_y) {
         ret.m_limits.min.x = std::min(ret.m_limits.min.x, min_x);
         ret.m_limits.min.y = std::min(ret.m_limits.min.y, min_y);
         ret.m_limits.max.x = std::max(ret.m_limits.max.x, max_x);
         ret.m_limits.max.y = std::max(ret.m_limits.max.y, max_y);
     };
-    auto addVerticalLine = [&ret, adjustLimits ](int x, int start_y, int stop_y)
+    auto addVerticalLine = [&tmpfield, adjustLimits](int x, int start_y, int stop_y)
         {
             for(int y = start_y; y <= stop_y; ++y) {
-                ret.m_field[Vec2(x, y)] = Field::Clay;
+                tmpfield[Vec2(x, y)] = Field::Clay;
             }
             adjustLimits(x, x, start_y, stop_y);
         };
-    auto addHorizontalLine = [&ret, adjustLimits ](int y, int start_x, int stop_x)
+    auto addHorizontalLine = [&tmpfield, adjustLimits](int y, int start_x, int stop_x)
         {
             for(int x = start_x; x <= stop_x; ++x) {
-                ret.m_field[Vec2(x, y)] = Field::Clay;
+                tmpfield[Vec2(x, y)] = Field::Clay;
             }
             adjustLimits(start_x, stop_x, y, y);
         };
@@ -59,8 +60,8 @@ Simulation parseInput(std::string_view input)
     ret.m_limits.max.x += 2;
 
     assert(ret.m_limits.min.y == 0);
-    ret.m_vfield.resize((ret.m_limits.max.x - ret.m_limits.min.x + 1) * (ret.m_limits.max.y + 1), Field::Empty);
-    for(auto const [pos, field] : ret.m_field) {
+    ret.m_field.resize((ret.m_limits.max.x - ret.m_limits.min.x + 1) * (ret.m_limits.max.y + 1), Field::Empty);
+    for(auto const [pos, field] : tmpfield) {
         ret.getField(pos) = field;
     }
 
@@ -93,13 +94,13 @@ std::ostream& operator<<(std::ostream& os, Simulation const& sim)
 Field& Simulation::getField(Vec2 const& pos)
 {
     int const stride = m_limits.max.x - m_limits.min.x;
-    return m_vfield[pos.y * stride + (pos.x - m_limits.min.x)];
+    return m_field[pos.y * stride + (pos.x - m_limits.min.x)];
 }
 
 Field Simulation::getField(Vec2 const& pos) const
 {
     int const stride = m_limits.max.x - m_limits.min.x;
-    return m_vfield[pos.y * stride + (pos.x - m_limits.min.x)];
+    return m_field[pos.y * stride + (pos.x - m_limits.min.x)];
 }
 
 bool fieldIsFree(Field f)
@@ -230,15 +231,15 @@ std::tuple<int64_t, int64_t> simulateFlow(Simulation& sim)
         if(!did_fill_something) { break; }
     }
 
-    auto const it = std::find(begin(sim.m_vfield), end(sim.m_vfield), Field::Clay);
-    int const dist = static_cast<int>(std::distance(begin(sim.m_vfield), it));
+    auto const it = std::find(begin(sim.m_field), end(sim.m_field), Field::Clay);
+    int const dist = static_cast<int>(std::distance(begin(sim.m_field), it));
     int const stride = sim.m_limits.max.x - sim.m_limits.min.x;
     int start_row = dist / stride;
-    auto const it_begin = begin(sim.m_vfield) + (start_row * stride);
+    auto const it_begin = begin(sim.m_field) + (start_row * stride);
 
-    return std::make_tuple(std::count_if(it_begin, end(sim.m_vfield), [](auto const f) {
+    return std::make_tuple(std::count_if(it_begin, end(sim.m_field), [](auto const f) {
             return (f == Field::Water_Flowing) || (f == Field::Water_Still);
-        }), std::count_if(it_begin, end(sim.m_vfield), [](auto const f) {
+        }), std::count_if(it_begin, end(sim.m_field), [](auto const f) {
             return (f == Field::Water_Still);
         }));
 }
