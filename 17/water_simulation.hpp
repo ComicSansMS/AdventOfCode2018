@@ -50,8 +50,7 @@ enum class Field {
 
 enum class Status {
     FoundPosition,
-    FloorMissing,
-    NoPosition
+    FloorMissing
 };
 
 struct Simulation {

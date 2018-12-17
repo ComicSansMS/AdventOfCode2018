@@ -143,9 +143,9 @@ std::tuple<Status, Vec2> Simulation::flowLeft(Vec2 const& start_pos)
             --pos.x;
             continue;
         }
-        return std::make_tuple(Status::FoundPosition, pos);
+        break;
     }
-    return std::make_tuple(Status::NoPosition, pos);
+    return std::make_tuple(Status::FoundPosition, pos);
 }
 
 std::tuple<Status, Vec2> Simulation::flowRight(Vec2 const& start_pos)
@@ -163,9 +163,9 @@ std::tuple<Status, Vec2> Simulation::flowRight(Vec2 const& start_pos)
             ++pos.x;
             continue;
         }
-        return std::make_tuple(Status::FoundPosition, pos);
+        break;
     }
-    return std::make_tuple(Status::NoPosition, pos);
+    return std::make_tuple(Status::FoundPosition, pos);
 }
 
 bool Simulation::spawn(Vec2 const& spawn_source)
@@ -175,7 +175,6 @@ bool Simulation::spawn(Vec2 const& spawn_source)
         if(!flow_end) { /* fell out of the map */ return false; }
         auto const [left_status, left_position] = flowLeft(*flow_end);
         auto const [right_status, right_position] = flowRight(*flow_end);
-        assert((left_status != Status::NoPosition) && (right_status != Status::NoPosition));
         if((left_status == Status::FoundPosition) && (right_status == Status::FoundPosition)) {
             if(left_position == *flow_end) {
                 getField(right_position) = Field::Water_Still;
