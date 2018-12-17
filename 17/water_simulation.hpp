@@ -6,6 +6,7 @@
 #include <optional>
 #include <string_view>
 #include <tuple>
+#include <vector>
 
 struct Vec2 {
     int x;

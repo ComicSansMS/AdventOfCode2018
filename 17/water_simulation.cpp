@@ -4,11 +4,8 @@
 #include <cassert>
 #include <iterator>
 #include <limits>
-#include <numeric>
 #include <ostream>
 #include <regex>
-#include <string>
-#include <tuple>
 #include <unordered_map>
 
 Simulation parseInput(std::string_view input)
