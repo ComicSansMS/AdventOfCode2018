@@ -198,7 +198,7 @@ std::tuple<std::vector<Acre>, int> findCycle(Acre const& a)
     int cycle_start = -1;
     while(cycle_start == -1) {
         Acre const new_a = step(acres.back());
-        for(int j = 0; j < acres.size(); ++j) {
+        for(int j = 0; j < static_cast<int>(acres.size()); ++j) {
             auto const& old_a = acres[j];
             if(new_a.m_field == old_a.m_field) {
                 // found cycle
