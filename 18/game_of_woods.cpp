@@ -8,12 +8,6 @@
 #include <regex>
 #include <unordered_map>
 
-Field& Acre::get(int x, int y)
-{
-    assert((x >= 0) && (x < m_width) && (y >= 0) && (y <= m_height));
-    return m_field[y*m_width + x];
-}
-
 Field Acre::get(int x, int y) const
 {
     assert((x >= 0) && (x < m_width) && (y >= 0) && (y <= m_height));

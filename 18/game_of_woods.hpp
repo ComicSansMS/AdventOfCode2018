@@ -19,7 +19,6 @@ struct Acre {
     int m_width;
     int m_height;
 
-    Field& get(int x, int y);
     Field get(int x, int y) const;
 
     bool openCondition(int x, int y) const;
