@@ -171,18 +171,42 @@ Acre step(Acre const& a)
     return ret;
 }
 
-int getTotalResourceValueAfter(Acre const& a, std::chrono::minutes count)
+int Acre::totalResourceValue() const
 {
-    assert(count.count() > 0);
-    Acre acc = step(a);
-    for(int i = 1; i < count.count(); ++i) {
-        acc = step(acc);
-    }
     int n_trees = 0;
     int n_yards = 0;
-    for(auto const& f : acc.m_field) {
+    for(auto const& f : m_field) {
         if(f == Field::Trees) { ++n_trees; }
         if(f == Field::Yard)  { ++n_yards; }
     }
     return n_trees * n_yards;
+}
+
+int getTotalResourceValueAfter(Acre const& a, std::chrono::minutes count)
+{
+    Acre acc = step(a);
+    for(int i = 1; i < count.count(); ++i) {
+        acc = step(acc);
+    }
+    return acc.totalResourceValue();
+}
+
+std::tuple<std::vector<Acre>, int> findCycle(Acre const& a)
+{
+    std::vector<Acre> acres;
+    acres.push_back(a);
+    int cycle_start = -1;
+    while(cycle_start == -1) {
+        Acre const new_a = step(acres.back());
+        for(int j = 0; j < acres.size(); ++j) {
+            auto const& old_a = acres[j];
+            if(new_a.m_field == old_a.m_field) {
+                // found cycle
+                cycle_start = j;
+                break;
+            }
+        }
+        acres.push_back(new_a);
+    }
+    return std::make_tuple(acres, cycle_start);
 }

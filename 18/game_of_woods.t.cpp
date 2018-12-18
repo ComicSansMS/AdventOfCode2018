@@ -289,4 +289,12 @@ TEST_CASE("Game of Woods")
         auto const a = parseInput(sample_input);
         CHECK(getTotalResourceValueAfter(a, 10min) == 1147);
     }
+
+    SECTION("Find Cycle")
+    {
+        auto const a = parseInput(sample_input);
+        auto const [acres, cycle_start] = findCycle(a);
+        CHECK(acres.size() == 20);
+        CHECK(cycle_start == 18);
+    }
 }

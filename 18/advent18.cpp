@@ -40,7 +40,12 @@ int main(int argc, char* argv[])
     using namespace std::chrono_literals;
     Acre const a = parseInput(*input);
     std::cout << "First result is " << getTotalResourceValueAfter(a, 10min) << std::endl;
-    //std::cout << "Second result is " << r2 << std::endl;
+
+    auto const [acres, cycle_start] = findCycle(a);
+    int64_t const cycle_length = (static_cast<int64_t>(acres.size()) - 1) - cycle_start;
+    int64_t const target_iteration = 1'000'000'000;
+    int64_t const target_cycle_offset = (target_iteration - cycle_start) % cycle_length;
+    std::cout << "Second result is " << acres[cycle_start + target_cycle_offset].totalResourceValue() << std::endl;
 
     return 0;
 }

@@ -25,6 +25,8 @@ struct Acre {
     bool openCondition(int x, int y) const;
     bool treeCondition(int x, int y) const;
     bool yardCondition(int x, int y) const;
+
+    int totalResourceValue() const;
 };
 
 Acre parseInput(std::string_view input);
@@ -34,5 +36,7 @@ std::ostream& operator<<(std::ostream& os, Acre const& a);
 Acre step(Acre const& a);
 
 int getTotalResourceValueAfter(Acre const& a, std::chrono::minutes count);
+
+std::tuple<std::vector<Acre>, int> findCycle(Acre const& a);
 
 #endif
