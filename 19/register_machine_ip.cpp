@@ -287,44 +287,6 @@ ExecuteFunction getFunctionFor(Opcode op)
     }
 }
 
-bool checkPreconditions(Opcode op, Instruction ins)
-{
-    if(op == Opcode::addr) {
-        return checkRegisterIndex(ins.input1) && checkRegisterIndex(ins.input2) && checkRegisterIndex(ins.output);
-    } else if(op == Opcode::addi) {
-        return checkRegisterIndex(ins.input1) && checkRegisterIndex(ins.output);
-    } else if(op == Opcode::mulr) {
-        return checkRegisterIndex(ins.input1) && checkRegisterIndex(ins.input2) && checkRegisterIndex(ins.output);
-    } else if(op == Opcode::muli) {
-        return checkRegisterIndex(ins.input1) && checkRegisterIndex(ins.output);
-    } else if(op == Opcode::banr) {
-        return checkRegisterIndex(ins.input1) && checkRegisterIndex(ins.input2) && checkRegisterIndex(ins.output);
-    } else if(op == Opcode::bani) {
-        return checkRegisterIndex(ins.input1) && checkRegisterIndex(ins.output);
-    } else if(op == Opcode::borr) {
-        return checkRegisterIndex(ins.input1) && checkRegisterIndex(ins.input2) && checkRegisterIndex(ins.output);
-    } else if(op == Opcode::bori) {
-        return checkRegisterIndex(ins.input1) && checkRegisterIndex(ins.output);
-    } else if(op == Opcode::setr) {
-        return checkRegisterIndex(ins.input1) && checkRegisterIndex(ins.output);
-    } else if(op == Opcode::seti) {
-        return checkRegisterIndex(ins.output);
-    } else if(op == Opcode::gtir) {
-        return checkRegisterIndex(ins.input2) && checkRegisterIndex(ins.output);
-    } else if(op == Opcode::gtri) {
-        return checkRegisterIndex(ins.input1) && checkRegisterIndex(ins.output);
-    } else if(op == Opcode::gtrr) {
-        return checkRegisterIndex(ins.input1) && checkRegisterIndex(ins.input2) && checkRegisterIndex(ins.output);
-    } else if(op == Opcode::eqir) {
-        return checkRegisterIndex(ins.input2) && checkRegisterIndex(ins.output);
-    } else if(op == Opcode::eqri) {
-        return checkRegisterIndex(ins.input1) && checkRegisterIndex(ins.output);
-    } else {
-        assert(op == Opcode::eqrr);
-        return checkRegisterIndex(ins.input1) && checkRegisterIndex(ins.input2) && checkRegisterIndex(ins.output);
-    }
-}
-
 bool step(RegisterMachine& rm)
 {
     Instruction const& instr = rm.program[rm.ip];

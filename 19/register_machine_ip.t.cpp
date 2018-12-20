@@ -161,6 +161,26 @@ TEST_CASE("Game of Woods")
         CHECK(executeEQRR(Instruction{Opcode::eqrr, 2, 2, 1}, Registers{5, 6, 7, 8}) == Registers{5, 1, 7, 8});
     }
 
+    SECTION("Get Function For Opcode")
+    {
+        CHECK(getFunctionFor(Opcode::addr) == executeAddR);
+        CHECK(getFunctionFor(Opcode::addi) == executeAddI);
+        CHECK(getFunctionFor(Opcode::mulr) == executeMulR);
+        CHECK(getFunctionFor(Opcode::muli) == executeMulI);
+        CHECK(getFunctionFor(Opcode::banr) == executeBAnR);
+        CHECK(getFunctionFor(Opcode::bani) == executeBAnI);
+        CHECK(getFunctionFor(Opcode::borr) == executeBOrR);
+        CHECK(getFunctionFor(Opcode::bori) == executeBOrI);
+        CHECK(getFunctionFor(Opcode::setr) == executeSetR);
+        CHECK(getFunctionFor(Opcode::seti) == executeSetI);
+        CHECK(getFunctionFor(Opcode::gtir) == executeGTIR);
+        CHECK(getFunctionFor(Opcode::gtri) == executeGTRI);
+        CHECK(getFunctionFor(Opcode::gtrr) == executeGTRR);
+        CHECK(getFunctionFor(Opcode::eqir) == executeEQIR);
+        CHECK(getFunctionFor(Opcode::eqri) == executeEQRI);
+        CHECK(getFunctionFor(Opcode::eqrr) == executeEQRR);
+    }
+
     SECTION("Execution Step")
     {
         auto rm = parseInput(sample_input);
