@@ -11,10 +11,10 @@
 
 bool operator==(Instruction const& lhs, Instruction const& rhs)
 {
-    return (lhs.Opcode == rhs.Opcode) &&
-           (lhs.Input1 == rhs.Input1) &&
-           (lhs.Input2 == rhs.Input2) &&
-           (lhs.Output == rhs.Output);
+    return (lhs.opcode == rhs.opcode) &&
+           (lhs.input1 == rhs.input1) &&
+           (lhs.input2 == rhs.input2) &&
+           (lhs.output == rhs.output);
 }
 
 Opcode parseOpcode(std::string const& str)
@@ -88,164 +88,164 @@ namespace {
 
 Registers executeAddR(Instruction const& instruction, Registers const& registers)
 {
-    assert(checkRegisterIndex(instruction.Input1));
-    assert(checkRegisterIndex(instruction.Input2));
-    assert(checkRegisterIndex(instruction.Output));
+    assert(checkRegisterIndex(instruction.input1));
+    assert(checkRegisterIndex(instruction.input2));
+    assert(checkRegisterIndex(instruction.output));
     Registers ret = registers;
-    ret[instruction.Output] = ret[instruction.Input1] + ret[instruction.Input2];
+    ret[instruction.output] = ret[instruction.input1] + ret[instruction.input2];
     return ret;
 }
 
 Registers executeAddI(Instruction const& instruction, Registers const& registers)
 {
-    assert(checkRegisterIndex(instruction.Input1));
-    assert(checkRegisterIndex(instruction.Output));
+    assert(checkRegisterIndex(instruction.input1));
+    assert(checkRegisterIndex(instruction.output));
     Registers ret = registers;
-    ret[instruction.Output] = ret[instruction.Input1] + instruction.Input2;
+    ret[instruction.output] = ret[instruction.input1] + instruction.input2;
     return ret;
 }
 
 
 Registers executeMulR(Instruction const& instruction, Registers const& registers)
 {
-    assert(checkRegisterIndex(instruction.Input1));
-    assert(checkRegisterIndex(instruction.Input2));
-    assert(checkRegisterIndex(instruction.Output));
+    assert(checkRegisterIndex(instruction.input1));
+    assert(checkRegisterIndex(instruction.input2));
+    assert(checkRegisterIndex(instruction.output));
     Registers ret = registers;
-    ret[instruction.Output] = ret[instruction.Input1] * ret[instruction.Input2];
+    ret[instruction.output] = ret[instruction.input1] * ret[instruction.input2];
     return ret;
 }
 
 
 Registers executeMulI(Instruction const& instruction, Registers const& registers)
 {
-    assert(checkRegisterIndex(instruction.Input1));
-    assert(checkRegisterIndex(instruction.Output));
+    assert(checkRegisterIndex(instruction.input1));
+    assert(checkRegisterIndex(instruction.output));
     Registers ret = registers;
-    ret[instruction.Output] = ret[instruction.Input1] * instruction.Input2;
+    ret[instruction.output] = ret[instruction.input1] * instruction.input2;
     return ret;
 }
 
 
 Registers executeBAnR(Instruction const& instruction, Registers const& registers)
 {
-    assert(checkRegisterIndex(instruction.Input1));
-    assert(checkRegisterIndex(instruction.Input2));
-    assert(checkRegisterIndex(instruction.Output));
+    assert(checkRegisterIndex(instruction.input1));
+    assert(checkRegisterIndex(instruction.input2));
+    assert(checkRegisterIndex(instruction.output));
     Registers ret = registers;
-    ret[instruction.Output] = ret[instruction.Input1] & ret[instruction.Input2];
+    ret[instruction.output] = ret[instruction.input1] & ret[instruction.input2];
     return ret;
 }
 
 
 Registers executeBAnI(Instruction const& instruction, Registers const& registers)
 {
-    assert(checkRegisterIndex(instruction.Input1));
-    assert(checkRegisterIndex(instruction.Output));
+    assert(checkRegisterIndex(instruction.input1));
+    assert(checkRegisterIndex(instruction.output));
     Registers ret = registers;
-    ret[instruction.Output] = ret[instruction.Input1] & instruction.Input2;
+    ret[instruction.output] = ret[instruction.input1] & instruction.input2;
     return ret;
 }
 
 
 Registers executeBOrR(Instruction const& instruction, Registers const& registers)
 {
-    assert(checkRegisterIndex(instruction.Input1));
-    assert(checkRegisterIndex(instruction.Input2));
-    assert(checkRegisterIndex(instruction.Output));
+    assert(checkRegisterIndex(instruction.input1));
+    assert(checkRegisterIndex(instruction.input2));
+    assert(checkRegisterIndex(instruction.output));
     Registers ret = registers;
-    ret[instruction.Output] = ret[instruction.Input1] | ret[instruction.Input2];
+    ret[instruction.output] = ret[instruction.input1] | ret[instruction.input2];
     return ret;
 }
 
 
 Registers executeBOrI(Instruction const& instruction, Registers const& registers)
 {
-    assert(checkRegisterIndex(instruction.Input1));
-    assert(checkRegisterIndex(instruction.Output));
+    assert(checkRegisterIndex(instruction.input1));
+    assert(checkRegisterIndex(instruction.output));
     Registers ret = registers;
-    ret[instruction.Output] = ret[instruction.Input1] | instruction.Input2;
+    ret[instruction.output] = ret[instruction.input1] | instruction.input2;
     return ret;
 }
 
 
 Registers executeSetR(Instruction const& instruction, Registers const& registers)
 {
-    assert(checkRegisterIndex(instruction.Input1));
-    assert(checkRegisterIndex(instruction.Output));
+    assert(checkRegisterIndex(instruction.input1));
+    assert(checkRegisterIndex(instruction.output));
     Registers ret = registers;
-    ret[instruction.Output] = ret[instruction.Input1];
+    ret[instruction.output] = ret[instruction.input1];
     return ret;
 }
 
 
 Registers executeSetI(Instruction const& instruction, Registers const& registers)
 {
-    assert(checkRegisterIndex(instruction.Output));
+    assert(checkRegisterIndex(instruction.output));
     Registers ret = registers;
-    ret[instruction.Output] = instruction.Input1;
+    ret[instruction.output] = instruction.input1;
     return ret;
 }
 
 
 Registers executeGTIR(Instruction const& instruction, Registers const& registers)
 {
-    assert(checkRegisterIndex(instruction.Input2));
-    assert(checkRegisterIndex(instruction.Output));
+    assert(checkRegisterIndex(instruction.input2));
+    assert(checkRegisterIndex(instruction.output));
     Registers ret = registers;
-    ret[instruction.Output] = (instruction.Input1 > ret[instruction.Input2]) ? 1 : 0;
+    ret[instruction.output] = (instruction.input1 > ret[instruction.input2]) ? 1 : 0;
     return ret;
 }
 
 
 Registers executeGTRI(Instruction const& instruction, Registers const& registers)
 {
-    assert(checkRegisterIndex(instruction.Input1));
-    assert(checkRegisterIndex(instruction.Output));
+    assert(checkRegisterIndex(instruction.input1));
+    assert(checkRegisterIndex(instruction.output));
     Registers ret = registers;
-    ret[instruction.Output] = (ret[instruction.Input1] > instruction.Input2) ? 1 : 0;
+    ret[instruction.output] = (ret[instruction.input1] > instruction.input2) ? 1 : 0;
     return ret;
 }
 
 
 Registers executeGTRR(Instruction const& instruction, Registers const& registers)
 {
-    assert(checkRegisterIndex(instruction.Input1));
-    assert(checkRegisterIndex(instruction.Input2));
-    assert(checkRegisterIndex(instruction.Output));
+    assert(checkRegisterIndex(instruction.input1));
+    assert(checkRegisterIndex(instruction.input2));
+    assert(checkRegisterIndex(instruction.output));
     Registers ret = registers;
-    ret[instruction.Output] = (ret[instruction.Input1] > ret[instruction.Input2]) ? 1 : 0;
+    ret[instruction.output] = (ret[instruction.input1] > ret[instruction.input2]) ? 1 : 0;
     return ret;
 }
 
 
 Registers executeEQIR(Instruction const& instruction, Registers const& registers)
 {
-    assert(checkRegisterIndex(instruction.Input2));
-    assert(checkRegisterIndex(instruction.Output));
+    assert(checkRegisterIndex(instruction.input2));
+    assert(checkRegisterIndex(instruction.output));
     Registers ret = registers;
-    ret[instruction.Output] = (instruction.Input1 == ret[instruction.Input2]) ? 1 : 0;
+    ret[instruction.output] = (instruction.input1 == ret[instruction.input2]) ? 1 : 0;
     return ret;
 }
 
 
 Registers executeEQRI(Instruction const& instruction, Registers const& registers)
 {
-    assert(checkRegisterIndex(instruction.Input1));
-    assert(checkRegisterIndex(instruction.Output));
+    assert(checkRegisterIndex(instruction.input1));
+    assert(checkRegisterIndex(instruction.output));
     Registers ret = registers;
-    ret[instruction.Output] = (ret[instruction.Input1] == instruction.Input2) ? 1 : 0;
+    ret[instruction.output] = (ret[instruction.input1] == instruction.input2) ? 1 : 0;
     return ret;
 }
 
 
 Registers executeEQRR(Instruction const& instruction, Registers const& registers)
 {
-    assert(checkRegisterIndex(instruction.Input1));
-    assert(checkRegisterIndex(instruction.Input2));
-    assert(checkRegisterIndex(instruction.Output));
+    assert(checkRegisterIndex(instruction.input1));
+    assert(checkRegisterIndex(instruction.input2));
+    assert(checkRegisterIndex(instruction.output));
     Registers ret = registers;
-    ret[instruction.Output] = (ret[instruction.Input1] == ret[instruction.Input2]) ? 1 : 0;
+    ret[instruction.output] = (ret[instruction.input1] == ret[instruction.input2]) ? 1 : 0;
     return ret;
 }
 
@@ -290,38 +290,38 @@ ExecuteFunction getFunctionFor(Opcode op)
 bool checkPreconditions(Opcode op, Instruction ins)
 {
     if(op == Opcode::addr) {
-        return checkRegisterIndex(ins.Input1) && checkRegisterIndex(ins.Input2) && checkRegisterIndex(ins.Output);
+        return checkRegisterIndex(ins.input1) && checkRegisterIndex(ins.input2) && checkRegisterIndex(ins.output);
     } else if(op == Opcode::addi) {
-        return checkRegisterIndex(ins.Input1) && checkRegisterIndex(ins.Output);
+        return checkRegisterIndex(ins.input1) && checkRegisterIndex(ins.output);
     } else if(op == Opcode::mulr) {
-        return checkRegisterIndex(ins.Input1) && checkRegisterIndex(ins.Input2) && checkRegisterIndex(ins.Output);
+        return checkRegisterIndex(ins.input1) && checkRegisterIndex(ins.input2) && checkRegisterIndex(ins.output);
     } else if(op == Opcode::muli) {
-        return checkRegisterIndex(ins.Input1) && checkRegisterIndex(ins.Output);
+        return checkRegisterIndex(ins.input1) && checkRegisterIndex(ins.output);
     } else if(op == Opcode::banr) {
-        return checkRegisterIndex(ins.Input1) && checkRegisterIndex(ins.Input2) && checkRegisterIndex(ins.Output);
+        return checkRegisterIndex(ins.input1) && checkRegisterIndex(ins.input2) && checkRegisterIndex(ins.output);
     } else if(op == Opcode::bani) {
-        return checkRegisterIndex(ins.Input1) && checkRegisterIndex(ins.Output);
+        return checkRegisterIndex(ins.input1) && checkRegisterIndex(ins.output);
     } else if(op == Opcode::borr) {
-        return checkRegisterIndex(ins.Input1) && checkRegisterIndex(ins.Input2) && checkRegisterIndex(ins.Output);
+        return checkRegisterIndex(ins.input1) && checkRegisterIndex(ins.input2) && checkRegisterIndex(ins.output);
     } else if(op == Opcode::bori) {
-        return checkRegisterIndex(ins.Input1) && checkRegisterIndex(ins.Output);
+        return checkRegisterIndex(ins.input1) && checkRegisterIndex(ins.output);
     } else if(op == Opcode::setr) {
-        return checkRegisterIndex(ins.Input1) && checkRegisterIndex(ins.Output);
+        return checkRegisterIndex(ins.input1) && checkRegisterIndex(ins.output);
     } else if(op == Opcode::seti) {
-        return checkRegisterIndex(ins.Output);
+        return checkRegisterIndex(ins.output);
     } else if(op == Opcode::gtir) {
-        return checkRegisterIndex(ins.Input2) && checkRegisterIndex(ins.Output);
+        return checkRegisterIndex(ins.input2) && checkRegisterIndex(ins.output);
     } else if(op == Opcode::gtri) {
-        return checkRegisterIndex(ins.Input1) && checkRegisterIndex(ins.Output);
+        return checkRegisterIndex(ins.input1) && checkRegisterIndex(ins.output);
     } else if(op == Opcode::gtrr) {
-        return checkRegisterIndex(ins.Input1) && checkRegisterIndex(ins.Input2) && checkRegisterIndex(ins.Output);
+        return checkRegisterIndex(ins.input1) && checkRegisterIndex(ins.input2) && checkRegisterIndex(ins.output);
     } else if(op == Opcode::eqir) {
-        return checkRegisterIndex(ins.Input2) && checkRegisterIndex(ins.Output);
+        return checkRegisterIndex(ins.input2) && checkRegisterIndex(ins.output);
     } else if(op == Opcode::eqri) {
-        return checkRegisterIndex(ins.Input1) && checkRegisterIndex(ins.Output);
+        return checkRegisterIndex(ins.input1) && checkRegisterIndex(ins.output);
     } else {
         assert(op == Opcode::eqrr);
-        return checkRegisterIndex(ins.Input1) && checkRegisterIndex(ins.Input2) && checkRegisterIndex(ins.Output);
+        return checkRegisterIndex(ins.input1) && checkRegisterIndex(ins.input2) && checkRegisterIndex(ins.output);
     }
 }
 
@@ -329,7 +329,7 @@ bool step(RegisterMachine& rm)
 {
     Instruction const& instr = rm.program[rm.ip];
     rm.registers[rm.ip_bound_register] = rm.ip;
-    Registers const result = getFunctionFor(instr.Opcode)(instr, rm.registers);
+    Registers const result = getFunctionFor(instr.opcode)(instr, rm.registers);
     rm.registers = result;
     rm.ip = rm.registers[rm.ip_bound_register];
     ++rm.ip;

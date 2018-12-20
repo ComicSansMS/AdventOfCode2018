@@ -26,10 +26,10 @@ enum class Opcode {
 };
 
 struct Instruction {
-    Opcode Opcode;
-    int Input1;
-    int Input2;
-    int Output;
+    Opcode opcode;
+    int input1;
+    int input2;
+    int output;
 };
 
 bool operator==(Instruction const& lhs, Instruction const& rhs);
