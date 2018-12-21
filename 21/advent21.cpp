@@ -1,5 +1,6 @@
 #include <register_machine_ip.hpp>
 
+#include <algorithm>
 #include <cassert>
 #include <fstream>
 #include <iostream>
@@ -40,7 +41,7 @@ int main(int argc, char* argv[])
     RegisterMachine rm = parseInput(*input);
     int break_instruction = -1;
     int break_register = -1;
-    for(int i = 0; i < rm.program.size(); ++i) {
+    for(int i = 0; i < static_cast<int>(rm.program.size()); ++i) {
         if((rm.program[i].opcode == Opcode::eqrr) && ((rm.program[i].input1 == 0) || (rm.program[i].input2 == 0))) {
             break_instruction = i;
             break_register = (rm.program[i].input1 == 0) ? rm.program[i].input2 : rm.program[i].input1;
