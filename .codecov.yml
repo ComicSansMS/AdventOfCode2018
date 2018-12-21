@@ -4,3 +4,4 @@ ignore:
   - 10/moving_stars.hpp
   - 17/water_simulation.hpp
   - 20/regex_labyrinth.hpp
+  - 21/**
