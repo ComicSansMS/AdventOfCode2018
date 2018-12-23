@@ -39,12 +39,10 @@ int main(int argc, char* argv[])
 
     Scan const scan = parseInput(*input);
 
-    Cave c(scan, scan.target_coords.x * 2, scan.target_coords.y * 2);
-    //std::ofstream fout("out.log");
-    //fout << c;
+    Cave c(scan, scan.target_coords.x * 8, scan.target_coords.y * 2);
 
     std::cout << "First result is " << c.riskLevelToTarget() << std::endl;
-    //std::cout << "Second result is " << "" << std::endl;
+    std::cout << "Second result is " << c.shortestPaths() << std::endl;
 
     return 0;
 }

@@ -43,6 +43,20 @@ enum class Region {
     Narrow
 };
 
+enum class Tool {
+    Torch,
+    ClimbingGear,
+    Neither
+};
+
+struct Spelunker {
+    Vec2 position;
+    Tool equipped;
+    int due_time;
+
+    Spelunker(int n_due_time);
+};
+
 struct Cave {
     std::vector<int64_t> erosion_levels;
     std::vector<Region> regions;
@@ -53,6 +67,8 @@ struct Cave {
     Cave(Scan const& n_scan, int64_t n_width, int64_t n_height);
 
     int riskLevelToTarget() const;
+
+    int shortestPaths() const;
 };
 
 std::ostream& operator<<(std::ostream& os, Cave const& c);

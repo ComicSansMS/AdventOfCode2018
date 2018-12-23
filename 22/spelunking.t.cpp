@@ -51,4 +51,19 @@ TEST_CASE("Spelunking")
 
         CHECK(c.riskLevelToTarget() == 114);
     }
+
+    SECTION("Spelunker Construction")
+    {
+        Spelunker s(42);
+        CHECK(s.position == Vec2(0, 0));
+        CHECK(s.equipped == Tool::Torch);
+        CHECK(s.due_time == 42);
+    }
+
+    SECTION("Spelunking")
+    {
+        auto const scan = parseInput(sample_input);
+        Cave c(scan, 16, 16);
+        CHECK(c.shortestPaths() == 45);
+    }
 }

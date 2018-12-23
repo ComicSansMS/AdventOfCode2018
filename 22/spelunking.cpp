@@ -5,6 +5,7 @@
 #include <iterator>
 #include <limits>
 #include <ostream>
+#include <queue>
 #include <sstream>
 #include <string>
 #include <unordered_map>
@@ -102,4 +103,111 @@ std::ostream& operator<<(std::ostream& os, Cave const& c)
         os << '\n';
     }
     return os;
+}
+
+Spelunker::Spelunker(int n_due_time)
+    :position(0, 0), equipped(Tool::Torch), due_time(n_due_time)
+{}
+
+int Cave::shortestPaths() const
+{
+    struct Comparator {
+        bool operator()(Spelunker const& lhs, Spelunker const& rhs) const { return lhs.due_time > rhs.due_time; };
+    };
+    std::priority_queue<Spelunker, std::vector<Spelunker>, Comparator> queue;
+    queue.push(Spelunker(0));
+
+    auto const tool_matches_field = [](Tool t, Region r) -> bool {
+        if(t == Tool::Torch) {
+            return (r != Region::Wet);
+        } else if(t == Tool::ClimbingGear) {
+            return (r != Region::Narrow);
+        } else {
+            assert(t == Tool::Neither);
+            return (r != Region::Rocky);
+        }
+    };
+
+    struct ReachTime {
+        int withTorch;
+        int withClimbingGear;
+        int withNeither;
+
+        ReachTime()
+            :withTorch(std::numeric_limits<int>::max()),
+             withClimbingGear(std::numeric_limits<int>::max()),
+             withNeither(std::numeric_limits<int>::max())
+        {}
+
+        void set(Tool t, int time) {
+            if(t == Tool::Torch) {
+                withTorch = std::min(withTorch, time);
+            } else if(t == Tool::ClimbingGear) {
+                withClimbingGear = std::min(withClimbingGear, time);
+            } else {
+                withNeither = std::min(withNeither, time);
+            }
+        }
+
+        int get(Tool t) const {
+            if(t == Tool::Torch) {
+                return withTorch;
+            } else if(t == Tool::ClimbingGear) {
+                return withClimbingGear;
+            } else {
+                return withNeither;
+            }
+        }
+    };
+
+    std::vector<ReachTime> time_to_reach;
+    time_to_reach.resize(width*height);
+
+    auto push_neighbor = [this, tool_matches_field, &queue, &time_to_reach](Spelunker const& s, Vec2 new_pos) {
+        Region const target_field = regions[(new_pos.y * width) + new_pos.x];
+        if(tool_matches_field(s.equipped, target_field)) {
+            Spelunker new_s = s;
+            new_s.position = new_pos;
+            assert(new_s.equipped == s.equipped);
+            ++new_s.due_time;
+            if(new_s.due_time < time_to_reach[new_pos.y * width + new_pos.x].get(new_s.equipped)) {
+                queue.push(new_s);
+            }
+        } else {
+            Spelunker new_s = s;
+            new_s.position = new_pos;
+            new_s.due_time += 8;
+            new_s.equipped = static_cast<Tool>((static_cast<int>(s.equipped) + 1) % 3);
+            if(new_s.due_time < time_to_reach[new_pos.y * width + new_pos.x].get(new_s.equipped)) {
+                queue.push(new_s);
+            }
+            new_s.equipped = static_cast<Tool>((static_cast<int>(s.equipped) + 2) % 3);
+            if(new_s.due_time < time_to_reach[new_pos.y * width + new_pos.x].get(new_s.equipped)) {
+                queue.push(new_s);
+            }
+        }
+    };
+
+    int time = -1;
+    while(!queue.empty()) {
+        assert(time < queue.top().due_time);
+        time = queue.top().due_time;
+        while((!queue.empty()) && (queue.top().due_time == time)) {
+            Spelunker const s = queue.top();
+            queue.pop();
+            auto& ttr = time_to_reach[(s.position.y * width) + s.position.x];
+            if(ttr.get(s.equipped) <= s.due_time) { continue; }
+            ttr.set(s.equipped, s.due_time);
+            // top
+            if(s.position.y > 0)          { push_neighbor(s, Vec2(s.position.x, s.position.y - 1)); }
+            // bottom
+            if(s.position.y < height - 1) { push_neighbor(s, Vec2(s.position.x, s.position.y + 1)); }
+            // left
+            if(s.position.x > 0)          { push_neighbor(s, Vec2(s.position.x - 1, s.position.y)); }
+            // right
+            if(s.position.x < width - 1)  { push_neighbor(s, Vec2(s.position.x + 1, s.position.y)); }
+        }
+    }
+    auto ttr_target = time_to_reach[(scan.target_coords.y * width) + scan.target_coords.x];
+    return std::min(ttr_target.withTorch + 7, ttr_target.withClimbingGear + 7);
 }
