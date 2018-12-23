@@ -10,7 +10,7 @@
 #include <string>
 #include <unordered_map>
 
-Vec3::Vec3(int64_t xx, int64_t yy, int64_t zz)
+Vec3::Vec3(int xx, int yy, int zz)
     :x(xx), y(yy), z(zz)
 {}
 
@@ -41,18 +41,18 @@ std::vector<Nanobot> parseInput(std::string_view input)
 }
 
 namespace {
-int64_t dist(Vec3 const& lhs, Vec3 const& rhs) {
+int dist(Vec3 const& lhs, Vec3 const& rhs) {
     return std::abs(lhs.x - rhs.x) +
            std::abs(lhs.y - rhs.y) +
            std::abs(lhs.z - rhs.z);
 }
 
-int64_t dist(Nanobot const& lhs, Nanobot const& rhs) {
+int dist(Nanobot const& lhs, Nanobot const& rhs) {
     return dist(lhs.position, rhs.position);
 }
 }
 
-int64_t inRangeOfLargestSignal(std::vector<Nanobot> const& bots)
+int inRangeOfLargestSignal(std::vector<Nanobot> const& bots)
 {
     auto const it_begin = begin(bots);
     auto const it_end = end(bots);
@@ -61,5 +61,6 @@ int64_t inRangeOfLargestSignal(std::vector<Nanobot> const& bots)
                          [](Nanobot const& lhs, Nanobot const& rhs) { return lhs.radius < rhs.radius; });
 
     Nanobot const& l = *it_largest_signal;
-    return std::count_if(it_begin, it_end, [&l](Nanobot const& b) { return (dist(l, b) <= l.radius); });
+    return static_cast<int>(
+        std::count_if(it_begin, it_end, [&l](Nanobot const& b) { return (dist(l, b) <= l.radius); }));
 }

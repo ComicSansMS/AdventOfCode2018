@@ -8,12 +8,12 @@
 #include <vector>
 
 struct Vec3 {
-    int64_t x;
-    int64_t y;
-    int64_t z;
+    int x;
+    int y;
+    int z;
 
     Vec3() = default;
-    Vec3(int64_t xx, int64_t yy, int64_t zz);
+    Vec3(int xx, int yy, int zz);
 };
 
 bool operator==(Vec3 const& lhs, Vec3 const& rhs);
@@ -35,11 +35,11 @@ template<> struct hash<Vec3>
 
 struct Nanobot {
     Vec3 position;
-    int64_t radius;
+    int radius;
 };
 
 std::vector<Nanobot> parseInput(std::string_view input);
 
-int64_t inRangeOfLargestSignal(std::vector<Nanobot> const& bots);
+int inRangeOfLargestSignal(std::vector<Nanobot> const& bots);
 
 #endif
