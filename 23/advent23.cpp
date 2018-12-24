@@ -1,9 +1,11 @@
 #include <nanobots.hpp>
 
+#include <algorithm>
 #include <array>
 #include <cassert>
 #include <fstream>
 #include <iostream>
+#include <numeric>
 #include <optional>
 #include <queue>
 #include <sstream>
