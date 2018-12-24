@@ -81,22 +81,6 @@ Bounding getBounding(std::vector<Nanobot> const& bots)
     return ret;
 }
 
-int& Overlaps::getOverlap(int x, int y, int z)
-{
-    assert((x >= 0) && (x <= width));
-    assert((y >= 0) && (y <= height));
-    assert((z >= 0) && (z <= depth));
-    return overlaps[(z * width * height) + y * width + x];
-}
-
-int Overlaps::getOverlap(int x, int y, int z) const
-{
-    assert((x >= 0) && (x <= width));
-    assert((y >= 0) && (y <= height));
-    assert((z >= 0) && (z <= depth));
-    return overlaps[(z * width * height) + y * width + x];
-}
-
 Overlaps overlaps(Bounding const& brect, std::vector<Nanobot> const& bots)
 {
     Overlaps ret;
