@@ -52,4 +52,39 @@ TEST_CASE("Nanobots")
         auto const bots = parseInput(sample_input);
         CHECK(inRangeOfLargestSignal(bots) == 7);
     }
+
+    SECTION("Overlaps")
+    {
+        char const overlap_input[] = "pos=<10,12,12>, r=2"   "\n"
+                                     "pos=<12,14,12>, r=2"   "\n"
+                                     "pos=<16,12,12>, r=4"   "\n"
+                                     "pos=<14,14,14>, r=6"   "\n"
+                                     "pos=<50,50,50>, r=200" "\n"
+                                     "pos=<10,10,10>, r=5"   "\n";
+        auto const bots = parseInput(overlap_input);
+        REQUIRE(bots.size() == 6);
+
+        Bounding brect = getBounding(bots);
+        CHECK(brect.min == Vec3(10, 10, 10));
+        CHECK(brect.max == Vec3(50, 50, 50));
+
+        auto const ov = overlaps(brect, bots);
+        CHECK(ov.width == 41);
+        CHECK(ov.height == 41);
+        CHECK(ov.depth == 41);
+
+        CHECK(ov.max_coords == Vec3(12, 12, 12));
+        CHECK(ov.max_overlap == 5);
+
+        for(auto const& b : bots) {
+            CHECK(intersects(b, brect));
+        }
+        Bounding bb2{ Vec3(0, 0, 0), Vec3(9, 9, 9) };
+        CHECK(!intersects(bots[0], bb2));
+        CHECK(!intersects(bots[1], bb2));
+        CHECK(!intersects(bots[2], bb2));
+        CHECK(!intersects(bots[3], bb2));
+        CHECK(intersects(bots[4], bb2));
+        CHECK(intersects(bots[5], bb2));
+    }
 }
