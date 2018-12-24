@@ -36,9 +36,8 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    Battlefield const b = parseInput(*input);
-
-    //std::cout << "First result is " << "" << std::endl;
+    Battlefield b1 = parseInput(*input);
+    std::cout << "First result is " << b1.simulateBattle() << std::endl;
     //std::cout << "Second result is " << "" << std::endl;
 
     return 0;

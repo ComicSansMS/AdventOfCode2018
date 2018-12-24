@@ -4,26 +4,13 @@
 #include <cassert>
 #include <iterator>
 #include <limits>
+#include <numeric>
 #include <optional>
 #include <ostream>
 #include <regex>
 #include <sstream>
 #include <string>
 #include <unordered_map>
-
-/*
-Immune System:
-17 units each with 5390 hit points (weak to radiation, bludgeoning) with
-an attack that does 4507 fire damage at initiative 2
-989 units each with 1274 hit points (immune to fire; weak to bludgeoning,
-slashing) with an attack that does 25 slashing damage at initiative 3
-
-Infection:
-801 units each with 4706 hit points (weak to radiation) with an attack
-that does 116 bludgeoning damage at initiative 1
-4485 units each with 2961 hit points (immune to radiation; weak to fire,
-cold) with an attack that does 12 slashing damage at initiative 4
-*/
 
 AttackType deserialize(std::string const& str)
 {
@@ -108,4 +95,116 @@ Battlefield parseInput(std::string_view input)
     }
 
     return ret;
+}
+
+int Battlefield::effectivePower(int group_idx) const
+{
+    assert((group_idx >= 0) && (group_idx < groups.size()));
+    Group const& g = groups[group_idx];
+    return g.units * g.stats.attackDamage;
+}
+
+int Battlefield::attackDamage(int attacker_idx, int target_idx) const
+{
+    Group const& attacker = groups[attacker_idx];
+    if(attacker.units <= 0) { return 0; }
+    Group const& target = groups[target_idx];
+    AttackType type = attacker.stats.attackType;
+    if(std::find(begin(target.stats.immunities), end(target.stats.immunities), type) != end(target.stats.immunities)) {
+        // target immune
+        return 0;
+    }
+    int const baseDamage = effectivePower(attacker_idx);
+    if(std::find(begin(target.stats.weaknesses), end(target.stats.weaknesses), type) != end(target.stats.weaknesses)) {
+        // weakness: double damage
+        return 2 * baseDamage;
+    }
+    return baseDamage;
+}
+
+std::tuple<int, std::optional<int>> Battlefield::selectTarget(int attacker_idx) const
+{
+    Group const& g = groups[attacker_idx];
+
+    int max_damage = 0;
+    std::optional<int> target_group;
+    for(int j = 0; j < static_cast<int>(groups.size()); ++j) {
+        if(std::find(begin(selected_targets), end(selected_targets), j) != end(selected_targets)) { continue; }
+        Group const& h = groups[j];
+        if(h.stats.faction != g.stats.faction) {
+            int const damage = attackDamage(attacker_idx, j);
+            if(damage == 0) { continue; }
+            if(damage >= max_damage) {
+                if((damage > max_damage) || (!target_group)) {
+                    max_damage = damage;
+                    target_group = j;
+                } else {
+                    assert(damage == max_damage);
+                    assert(target_group);
+                    int const ep1 = effectivePower(*target_group);
+                    int const ep2 = effectivePower(j);
+                    if(ep2 > ep1) {
+                        max_damage = damage;
+                        target_group = j;
+                    } else if(ep1 == ep2) {
+                        if(h.stats.initiative > groups[*target_group].stats.initiative) {
+                            max_damage = damage;
+                            target_group = j;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return std::make_tuple(max_damage, target_group);
+}
+
+void Battlefield::targetSelection()
+{
+    std::vector<int> turn_order(groups.size());
+    std::iota(begin(turn_order), end(turn_order), 0);
+    std::sort(begin(turn_order), end(turn_order), [this](int i1, int i2) {
+        int const ep1 = effectivePower(i1);
+        int const ep2 = effectivePower(i2);
+        if(ep1 != ep2) {
+            return ep2 < ep1;
+        }
+        return groups[i2].stats.initiative < groups[i1].stats.initiative;
+    });
+
+    selected_targets.assign(groups.size(), -1);
+    for(auto const& i : turn_order) {
+        auto const [max_damage, target_idx] = selectTarget(i);
+        selected_targets[i] = target_idx.value_or(-1);
+    }
+}
+
+bool Battlefield::attackPhase()
+{
+    std::vector<int> turn_order(groups.size());
+    std::iota(begin(turn_order), end(turn_order), 0);
+    std::sort(begin(turn_order), end(turn_order), [this](int i1, int i2) {
+        return groups[i2].stats.initiative < groups[i1].stats.initiative;
+    });
+
+    for(auto const& i : turn_order) {
+        if(selected_targets[i] == -1) { continue; }
+        Group& target = groups[selected_targets[i]];
+        int const damage = attackDamage(i, selected_targets[i]);
+        int units_lost = damage / target.stats.hitPoints;
+        target.units -= units_lost;
+    }
+
+    groups.erase(std::remove_if(begin(groups), end(groups), [](Group const& g) { return g.units <= 0; }), end(groups));
+    Faction const f = groups.front().stats.faction;
+    return std::all_of(begin(groups), end(groups), [f](Group const& g) { return g.stats.faction == f; });
+}
+
+int Battlefield::simulateBattle()
+{
+    for(;;) {
+        targetSelection();
+        if(attackPhase()) { break; }
+    }
+    return std::accumulate(begin(groups), end(groups), 0, [](int acc, Group const& g) { return acc + g.units; });
 }

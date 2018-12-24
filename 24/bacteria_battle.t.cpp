@@ -65,4 +65,235 @@ TEST_CASE("Bacteria Battle")
         CHECK(deserialize("radiation")   == AttackType::Radiation);
         CHECK(deserialize("slashing")    == AttackType::Slashing);
     }
+
+    SECTION("Effective Power")
+    {
+        char const sample_group[] = "Immune System:" "\n"
+            "18 units each with 729 hit points (weak to fire; immune to cold, slashing)"
+            " with an attack that does 8 radiation damage at initiative 10";
+        auto b = parseInput(sample_group);
+
+        CHECK(b.effectivePower(0) == 144);
+    }
+
+    SECTION("Battle Simulation")
+    {
+        Battlefield b = parseInput(sample_input);
+
+        /* round 1
+        Immune System:
+        Group 1 contains 17 units
+        Group 2 contains 989 units
+        Infection:
+        Group 1 contains 801 units
+        Group 2 contains 4485 units
+
+        Infection group 1 would deal defending group 1 185832 damage
+        Infection group 1 would deal defending group 2 185832 damage
+        Infection group 2 would deal defending group 2 107640 damage
+        Immune System group 1 would deal defending group 1 76619 damage
+        Immune System group 1 would deal defending group 2 153238 damage
+        Immune System group 2 would deal defending group 1 24725 damage
+
+        Infection group 2 attacks defending group 2, killing 84 units
+        Immune System group 2 attacks defending group 1, killing 4 units
+        Immune System group 1 attacks defending group 2, killing 51 units
+        Infection group 1 attacks defending group 1, killing 17 units
+        */
+        b.targetSelection();
+        CHECK(b.selected_targets[0] == 3);
+        CHECK(b.selected_targets[1] == 2);
+        CHECK(b.selected_targets[2] == 0);
+        CHECK(b.selected_targets[3] == 1);
+
+        CHECK(b.groups[0].units == 17);
+        CHECK(b.groups[1].units == 989);
+        CHECK(b.groups[2].units == 801);
+        CHECK(b.groups[3].units == 4485);
+        CHECK(!b.attackPhase());
+        CHECK(b.groups.size() == 3);
+        CHECK(b.groups[0].units == 905);
+        CHECK(b.groups[1].units == 797);
+        CHECK(b.groups[2].units == 4434);
+
+        /* round 2
+        Immune System:
+        Group 2 contains 905 units
+        Infection:
+        Group 1 contains 797 units
+        Group 2 contains 4434 units
+        
+        Infection group 1 would deal defending group 2 184904 damage
+        Immune System group 2 would deal defending group 1 22625 damage
+        Immune System group 2 would deal defending group 2 22625 damage
+        
+        Immune System group 2 attacks defending group 1, killing 4 units
+        Infection group 1 attacks defending group 2, killing 144 units
+        */
+        b.targetSelection();
+        CHECK(b.selected_targets[0] == 1);
+        CHECK(b.selected_targets[1] == 0);
+        CHECK(b.selected_targets[2] == -1);
+
+        CHECK(!b.attackPhase());
+        CHECK(b.groups.size() == 3);
+        CHECK(b.groups[0].units == 761);
+        CHECK(b.groups[1].units == 793);
+        CHECK(b.groups[2].units == 4434);
+
+        /* round 3
+        Immune System:
+        Group 2 contains 761 units
+        Infection:
+        Group 1 contains 793 units
+        Group 2 contains 4434 units
+        
+        Infection group 1 would deal defending group 2 183976 damage
+        Immune System group 2 would deal defending group 1 19025 damage
+        Immune System group 2 would deal defending group 2 19025 damage
+        
+        Immune System group 2 attacks defending group 1, killing 4 units
+        Infection group 1 attacks defending group 2, killing 143 units
+        */
+        b.targetSelection();
+        CHECK(b.selected_targets[0] == 1);
+        CHECK(b.selected_targets[1] == 0);
+        CHECK(b.selected_targets[2] == -1);
+
+        CHECK(!b.attackPhase());
+        CHECK(b.groups.size() == 3);
+        CHECK(b.groups[0].units == 618);
+        CHECK(b.groups[1].units == 789);
+        CHECK(b.groups[2].units == 4434);
+
+        /* roung 4
+        Immune System:
+        Group 2 contains 618 units
+        Infection:
+        Group 1 contains 789 units
+        Group 2 contains 4434 units
+        
+        Infection group 1 would deal defending group 2 183048 damage
+        Immune System group 2 would deal defending group 1 15450 damage
+        Immune System group 2 would deal defending group 2 15450 damage
+        
+        Immune System group 2 attacks defending group 1, killing 3 units
+        Infection group 1 attacks defending group 2, killing 143 units
+        */
+        b.targetSelection();
+        CHECK(b.selected_targets[0] == 1);
+        CHECK(b.selected_targets[1] == 0);
+        CHECK(b.selected_targets[2] == -1);
+
+        CHECK(!b.attackPhase());
+        CHECK(b.groups.size() == 3);
+        CHECK(b.groups[0].units == 475);
+        CHECK(b.groups[1].units == 786);
+        CHECK(b.groups[2].units == 4434);
+
+        /* round 5
+        Immune System:
+        Group 2 contains 475 units
+        Infection:
+        Group 1 contains 786 units
+        Group 2 contains 4434 units
+        
+        Infection group 1 would deal defending group 2 182352 damage
+        Immune System group 2 would deal defending group 1 11875 damage
+        Immune System group 2 would deal defending group 2 11875 damage
+        
+        Immune System group 2 attacks defending group 1, killing 2 units
+        Infection group 1 attacks defending group 2, killing 142 units
+        */
+        b.targetSelection();
+        CHECK(b.selected_targets[0] == 1);
+        CHECK(b.selected_targets[1] == 0);
+        CHECK(b.selected_targets[2] == -1);
+
+        CHECK(!b.attackPhase());
+        CHECK(b.groups.size() == 3);
+        CHECK(b.groups[0].units == 333);
+        CHECK(b.groups[1].units == 784);
+        CHECK(b.groups[2].units == 4434);
+
+        /* round 6
+        Immune System:
+        Group 2 contains 333 units
+        Infection:
+        Group 1 contains 784 units
+        Group 2 contains 4434 units
+
+        Infection group 1 would deal defending group 2 181888 damage
+        Immune System group 2 would deal defending group 1 8325 damage
+        Immune System group 2 would deal defending group 2 8325 damage
+
+        Immune System group 2 attacks defending group 1, killing 1 unit
+        Infection group 1 attacks defending group 2, killing 142 units
+        */
+        b.targetSelection();
+        CHECK(b.selected_targets[0] == 1);
+        CHECK(b.selected_targets[1] == 0);
+        CHECK(b.selected_targets[2] == -1);
+
+        CHECK(!b.attackPhase());
+        CHECK(b.groups.size() == 3);
+        CHECK(b.groups[0].units == 191);
+        CHECK(b.groups[1].units == 783);
+        CHECK(b.groups[2].units == 4434);
+
+        /* round 7
+        Immune System:
+        Group 2 contains 191 units
+        Infection:
+        Group 1 contains 783 units
+        Group 2 contains 4434 units
+
+        Infection group 1 would deal defending group 2 181656 damage
+        Immune System group 2 would deal defending group 1 4775 damage
+        Immune System group 2 would deal defending group 2 4775 damage
+
+        Immune System group 2 attacks defending group 1, killing 1 unit
+        Infection group 1 attacks defending group 2, killing 142 units
+        */
+        b.targetSelection();
+        CHECK(b.selected_targets[0] == 1);
+        CHECK(b.selected_targets[1] == 0);
+        CHECK(b.selected_targets[2] == -1);
+
+        CHECK(!b.attackPhase());
+        CHECK(b.groups.size() == 3);
+        CHECK(b.groups[0].units == 49);
+        CHECK(b.groups[1].units == 782);
+        CHECK(b.groups[2].units == 4434);
+
+        /* round 8
+        Immune System:
+        Group 2 contains 49 units
+        Infection:
+        Group 1 contains 782 units
+        Group 2 contains 4434 units
+
+        Infection group 1 would deal defending group 2 181424 damage
+        Immune System group 2 would deal defending group 1 1225 damage
+        Immune System group 2 would deal defending group 2 1225 damage
+
+        Immune System group 2 attacks defending group 1, killing 0 units
+        Infection group 1 attacks defending group 2, killing 49 units
+        */
+        b.targetSelection();
+        CHECK(b.selected_targets[0] == 1);
+        CHECK(b.selected_targets[1] == 0);
+        CHECK(b.selected_targets[2] == -1);
+
+        CHECK(b.attackPhase());
+        CHECK(b.groups.size() == 2);
+        CHECK(b.groups[0].units == 782);
+        CHECK(b.groups[1].units == 4434);
+    }
+
+    SECTION("Simulate Battle")
+    {
+        Battlefield b = parseInput(sample_input);
+        CHECK(b.simulateBattle() == 5216);
+    }
 }
