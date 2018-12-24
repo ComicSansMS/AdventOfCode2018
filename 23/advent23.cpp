@@ -108,7 +108,7 @@ int main(int argc, char* argv[])
 
     while(true) {
         auto const [brect, n_int] = queue.top();
-        if(check_dimensions(brect, 50)) {
+        if(check_dimensions(brect, 10)) {
             bounding = brect; break;
         }
         queue.pop();
@@ -118,7 +118,7 @@ int main(int argc, char* argv[])
         }
     }
     auto const ov = overlaps(bounding, bots);
-    std::cout << " " << ov.max_coords.x << "," << ov.max_coords.y << "," << ov.max_coords.z << "  " << ov.max_overlap << std::endl;
+    //std::cout << " " << ov.max_coords.x << "," << ov.max_coords.y << "," << ov.max_coords.z << "  " << ov.max_overlap << std::endl;
 
     std::cout << "First result is " << inRangeOfLargestSignal(bots) << std::endl;
     std::cout << "Second result is " << (std::abs(ov.max_coords.x) + std::abs(ov.max_coords.y) + std::abs(ov.max_coords.z)) << std::endl;
