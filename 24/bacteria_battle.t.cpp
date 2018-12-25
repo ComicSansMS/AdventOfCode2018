@@ -76,6 +76,48 @@ TEST_CASE("Bacteria Battle")
         CHECK(b.effectivePower(0) == 144);
     }
 
+    SECTION("Attack Damage")
+    {
+        INFO("By default, an attacking group would deal damage equal to its effective power to the defending group.");
+        Battlefield b;
+        b.groups.push_back(Group{ UnitStats{ Faction::Immune, 4000, 32, AttackType::Cold, 1, {}, {} }, 123 });
+        b.groups.push_back(Group{ UnitStats{ Faction::Infection, 4000, 32, AttackType::Fire, 2, {}, {} }, 123 });
+        CHECK(b.attackDamage(0, 1) == b.effectivePower(0));
+
+        INFO("However, if the defending group is immune to the attacking group's attack type, the defending group instead takes no damage;");
+        b.groups[1].stats.immunities.push_back(b.groups[0].stats.attackType);
+        CHECK(b.attackDamage(0, 1) == 0);
+
+        INFO("If the defending group is weak to the attacking group's attack type, the defending group instead takes double damage.");
+        b.groups[1].stats.immunities.clear();
+        b.groups[1].stats.weaknesses.push_back(b.groups[0].stats.attackType);
+        CHECK(b.attackDamage(0, 1) == 2 * b.effectivePower(0));
+    }
+
+    SECTION("Target Selection Phase")
+    {
+        Battlefield b;
+        b.groups.push_back(Group{ UnitStats{ Faction::Immune, 4000, 32, AttackType::Cold, 1, {}, {} }, 123 });
+        b.groups.push_back(Group{ UnitStats{ Faction::Infection, 4000, 32, AttackType::Fire, 2, {}, {} }, 123 });
+        b.groups.push_back(Group{ UnitStats{ Faction::Infection, 4000, 32, AttackType::Fire, 3, {AttackType::Cold}, {} }, 123 });
+
+        INFO("The attacking group chooses to target the group in the enemy army to which it would deal the most damage");
+        b.targetSelection();
+        CHECK(b.selected_targets[0] == 2);
+
+        INFO("If an attacking group is considering two defending groups to which it would deal equal damage," \
+            " it chooses to target the defending group with the largest effective power");
+        b.groups[2].stats.weaknesses.clear();
+        b.groups[1].stats.attackDamage++;
+        b.targetSelection();
+        CHECK(b.selected_targets[0] == 1);
+
+        INFO("if there is still a tie, it chooses the defending group with the highest initiative");
+        b.groups[1].stats.attackDamage = b.groups[2].stats.attackDamage;
+        b.targetSelection();
+        CHECK(b.selected_targets[0] == 2);
+    }
+
     SECTION("Battle Simulation")
     {
         Battlefield b = parseInput(sample_input);

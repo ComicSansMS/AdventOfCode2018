@@ -99,7 +99,7 @@ Battlefield parseInput(std::string_view input)
 
 int Battlefield::effectivePower(int group_idx) const
 {
-    assert((group_idx >= 0) && (group_idx < groups.size()));
+    assert((group_idx >= 0) && (group_idx < static_cast<int>(groups.size())));
     Group const& g = groups[group_idx];
     return g.units * g.stats.attackDamage;
 }
@@ -109,6 +109,7 @@ int Battlefield::attackDamage(int attacker_idx, int target_idx) const
     Group const& attacker = groups[attacker_idx];
     if(attacker.units <= 0) { return 0; }
     Group const& target = groups[target_idx];
+    assert(attacker.stats.faction != target.stats.faction);
     AttackType type = attacker.stats.attackType;
     if(std::find(begin(target.stats.immunities), end(target.stats.immunities), type) != end(target.stats.immunities)) {
         // target immune
