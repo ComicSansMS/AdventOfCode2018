@@ -45,7 +45,6 @@ int distance(Vec4 const& lhs, Vec4 const& rhs)
 
 std::vector<std::vector<Vec4>> cluster(std::vector<Vec4> const& vs)
 {
-    int const max_distance = 3;
     std::vector<std::vector<Vec4>> ret;
     std::vector<Vec4> remains = vs;
     while(!remains.empty()) {
@@ -56,7 +55,7 @@ std::vector<std::vector<Vec4>> cluster(std::vector<Vec4> const& vs)
         for(auto it_candidate = begin(remains); it_candidate != end(remains);) {
             auto const& candidate = *it_candidate;
             auto const it = std::find_if(begin(cluster), end(cluster),
-                [&candidate, max_distance](Vec4 const& c) { return distance(candidate, c) <= max_distance; });
+                [&candidate](Vec4 const& c) { return distance(candidate, c) <= 3; });
             if(it != end(cluster)) {
                 cluster.push_back(candidate);
                 remains.erase(it_candidate);
