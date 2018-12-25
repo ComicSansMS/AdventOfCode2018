@@ -340,6 +340,14 @@ TEST_CASE("Bacteria Battle")
         CHECK(b.simulateBattle() == 5216);
     }
 
+    SECTION("Tied Battle")
+    {
+        Battlefield b;
+        b.groups.push_back(Group{ UnitStats{ Faction::Immune, 4000, 32, AttackType::Cold, 1, {}, {AttackType::Fire} }, 123 });
+        b.groups.push_back(Group{ UnitStats{ Faction::Infection, 4000, 32, AttackType::Fire, 2, {}, {AttackType::Cold} }, 123 });
+        CHECK(b.simulateBattle() == -1);
+    }
+
     SECTION("Battle with Boost")
     {
         Battlefield b = parseInput(sample_input);
