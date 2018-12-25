@@ -100,6 +100,8 @@ TEST_CASE("Bacteria Battle")
         b.groups.push_back(Group{ UnitStats{ Faction::Immune, 4000, 32, AttackType::Cold, 1, {}, {} }, 123 });
         b.groups.push_back(Group{ UnitStats{ Faction::Infection, 4000, 32, AttackType::Fire, 2, {}, {} }, 123 });
         b.groups.push_back(Group{ UnitStats{ Faction::Infection, 4000, 32, AttackType::Fire, 3, {AttackType::Cold}, {} }, 123 });
+        b.groups.push_back(Group{ UnitStats{ Faction::Infection, 4000, 33, AttackType::Fire, 4, {}, {} }, 123 });
+        b.groups.push_back(Group{ UnitStats{ Faction::Infection, 4000, 32, AttackType::Fire, 5, {}, {} }, 123 });
 
         INFO("The attacking group chooses to target the group in the enemy army to which it would deal the most damage");
         b.targetSelection();
@@ -108,14 +110,13 @@ TEST_CASE("Bacteria Battle")
         INFO("If an attacking group is considering two defending groups to which it would deal equal damage," \
             " it chooses to target the defending group with the largest effective power");
         b.groups[2].stats.weaknesses.clear();
-        b.groups[1].stats.attackDamage++;
         b.targetSelection();
-        CHECK(b.selected_targets[0] == 1);
+        CHECK(b.selected_targets[0] == 3);
 
         INFO("if there is still a tie, it chooses the defending group with the highest initiative");
-        b.groups[1].stats.attackDamage = b.groups[2].stats.attackDamage;
+        b.groups[3].stats.attackDamage = b.groups[1].stats.attackDamage;
         b.targetSelection();
-        CHECK(b.selected_targets[0] == 2);
+        CHECK(b.selected_targets[0] == 4);
     }
 
     SECTION("Battle Simulation")
