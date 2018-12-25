@@ -339,4 +339,118 @@ TEST_CASE("Bacteria Battle")
         Battlefield b = parseInput(sample_input);
         CHECK(b.simulateBattle() == 5216);
     }
+
+    SECTION("Battle with Boost")
+    {
+        Battlefield b = parseInput(sample_input);
+        b.boostUnits(Faction::Immune, 1570);
+        CHECK(b.groups[0].stats.attackDamage == 6077);
+        CHECK(b.groups[1].stats.attackDamage == 1595);
+        CHECK(b.groups[2].stats.attackDamage == 116);
+        CHECK(b.groups[3].stats.attackDamage == 12);
+
+        /* round 1
+        Immune System:
+        Group 2 contains 989 units
+        Group 1 contains 17 units
+        Infection:
+        Group 1 contains 801 units
+        Group 2 contains 4485 units
+
+        Infection group 1 would deal defending group 2 185832 damage
+        Infection group 1 would deal defending group 1 185832 damage
+        Infection group 2 would deal defending group 1 53820 damage
+        Immune System group 2 would deal defending group 1 1577455 damage
+        Immune System group 2 would deal defending group 2 1577455 damage
+        Immune System group 1 would deal defending group 2 206618 damage
+
+        Infection group 2 attacks defending group 1, killing 9 units
+        Immune System group 2 attacks defending group 1, killing 335 units
+        Immune System group 1 attacks defending group 2, killing 32 units
+        Infection group 1 attacks defending group 2, killing 84 units
+        */
+        b.targetSelection();
+        CHECK(b.selected_targets[0] == 3);
+        CHECK(b.selected_targets[1] == 2);
+        CHECK(b.selected_targets[2] == 1);
+        CHECK(b.selected_targets[3] == 0);
+
+        CHECK(b.groups[0].units == 17);
+        CHECK(b.groups[1].units == 989);
+        CHECK(b.groups[2].units == 801);
+        CHECK(b.groups[3].units == 4485);
+        CHECK(!b.attackPhase());
+        CHECK(b.groups.size() == 4);
+        CHECK(b.groups[0].units == 8);
+        CHECK(b.groups[1].units == 905);
+        CHECK(b.groups[2].units == 466);
+        CHECK(b.groups[3].units == 4453);
+
+        /* round 2
+        Immune System:
+        Group 2 contains 905 units
+        Group 1 contains 8 units
+        Infection:
+        Group 1 contains 466 units
+        Group 2 contains 4453 units
+
+        Infection group 1 would deal defending group 2 108112 damage
+        Infection group 1 would deal defending group 1 108112 damage
+        Infection group 2 would deal defending group 1 53436 damage
+        Immune System group 2 would deal defending group 1 1443475 damage
+        Immune System group 2 would deal defending group 2 1443475 damage
+        Immune System group 1 would deal defending group 2 97232 damage
+
+        Infection group 2 attacks defending group 1, killing 8 units
+        Immune System group 2 attacks defending group 1, killing 306 units
+        Infection group 1 attacks defending group 2, killing 29 units
+        */
+        b.targetSelection();
+        CHECK(b.selected_targets[0] == 3);
+        CHECK(b.selected_targets[1] == 2);
+        CHECK(b.selected_targets[2] == 1);
+        CHECK(b.selected_targets[3] == 0);
+
+        CHECK(!b.attackPhase());
+        CHECK(b.groups.size() == 3);
+        CHECK(b.groups[0].units == 876);
+        CHECK(b.groups[1].units == 160);
+        CHECK(b.groups[2].units == 4453);
+
+        /* round 3
+        Immune System:
+        Group 2 contains 876 units
+        Infection:
+        Group 2 contains 4453 units
+        Group 1 contains 160 units
+
+        Infection group 2 would deal defending group 2 106872 damage
+        Immune System group 2 would deal defending group 2 1397220 damage
+        Immune System group 2 would deal defending group 1 1397220 damage
+
+        Infection group 2 attacks defending group 2, killing 83 units
+        Immune System group 2 attacks defending group 2, killing 427 units
+        */
+        b.targetSelection();
+        CHECK(b.selected_targets[0] == 2);
+        CHECK(b.selected_targets[1] == -1);
+        CHECK(b.selected_targets[2] == 0);
+
+        CHECK(!b.attackPhase());
+        CHECK(b.groups.size() == 3);
+        CHECK(b.groups[0].units == 793);
+        CHECK(b.groups[1].units == 160);
+        CHECK(b.groups[2].units == 4026);
+
+        // after a few more fights...
+        CHECK(b.simulateBattle() == 51);
+        CHECK(b.groups[0].stats.faction == Faction::Immune);
+    }
+
+    SECTION("Find Smallest Boost")
+    {
+        Battlefield b = parseInput(sample_input);
+
+        CHECK(findSmallestBoost(b) == 51);
+    }
 }

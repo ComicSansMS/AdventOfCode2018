@@ -47,6 +47,8 @@ struct Battlefield {
     bool attackPhase();
 
     int simulateBattle();
+
+    void boostUnits(Faction f, int boost);
 };
 
 AttackType deserialize(std::string const& str);
@@ -55,5 +57,7 @@ std::vector<AttackType> parseWeaknesses(std::string const& str);
 std::vector<AttackType> parseImmunities(std::string const& str);
 
 Battlefield parseInput(std::string_view input);
+
+int findSmallestBoost(Battlefield const& b);
 
 #endif

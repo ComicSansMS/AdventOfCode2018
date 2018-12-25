@@ -201,11 +201,47 @@ bool Battlefield::attackPhase()
     return std::all_of(begin(groups), end(groups), [f](Group const& g) { return g.stats.faction == f; });
 }
 
+namespace {
+bool isTied(std::vector<Group> const& g1, std::vector<Group> g2) {
+    if(g1.size() != g2.size()) { return false; }
+    for(std::size_t i = 0; i < g1.size(); ++i) {
+        if(g1[i].units != g2[i].units) { return false; }
+    }
+    return true;
+}
+}
+
 int Battlefield::simulateBattle()
 {
     for(;;) {
         targetSelection();
+        auto const old_groups = groups;
         if(attackPhase()) { break; }
+        if(isTied(old_groups, groups)) { return -1; }
     }
     return std::accumulate(begin(groups), end(groups), 0, [](int acc, Group const& g) { return acc + g.units; });
+}
+
+void Battlefield::boostUnits(Faction f, int boost)
+{
+    for(auto& g :groups) {
+        if(g.stats.faction == f) {
+            g.stats.attackDamage += boost;
+        }
+    }
+}
+
+int findSmallestBoost(Battlefield const& b)
+{
+    for(int current_boost = 1; ; ++current_boost) {
+        Battlefield t = b;
+        t.boostUnits(Faction::Immune, current_boost);
+        int remains = t.simulateBattle();
+        if(remains != -1) {
+            if(t.groups.front().stats.faction == Faction::Immune) {
+                return remains;
+            }
+        }
+    }
+    return 0;
 }

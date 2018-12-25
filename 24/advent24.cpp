@@ -36,9 +36,11 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    Battlefield b1 = parseInput(*input);
+    Battlefield const b = parseInput(*input);
+
+    Battlefield b1 = b;
     std::cout << "First result is " << b1.simulateBattle() << std::endl;
-    //std::cout << "Second result is " << "" << std::endl;
+    std::cout << "Second result is " << findSmallestBoost(b) << std::endl;
 
     return 0;
 }
