@@ -233,7 +233,19 @@ void Battlefield::boostUnits(Faction f, int boost)
 
 int findSmallestBoost(Battlefield const& b)
 {
-    for(int current_boost = 1; ; ++current_boost) {
+    int boost_lower_bound = 1;
+    for(int current_boost = boost_lower_bound; ; current_boost *= 2) {
+        Battlefield t = b;
+        t.boostUnits(Faction::Immune, current_boost);
+        int remains = t.simulateBattle();
+        if(remains != -1) {
+            if(t.groups.front().stats.faction == Faction::Immune) {
+                break;
+            }
+        }
+        boost_lower_bound = current_boost;
+    }
+    for(int current_boost = boost_lower_bound + 1; ; ++current_boost) {
         Battlefield t = b;
         t.boostUnits(Faction::Immune, current_boost);
         int remains = t.simulateBattle();
@@ -243,5 +255,4 @@ int findSmallestBoost(Battlefield const& b)
             }
         }
     }
-    return 0;
 }
